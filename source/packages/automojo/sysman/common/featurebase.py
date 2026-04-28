@@ -282,7 +282,12 @@ class BaseFeatureManager:
 
         # The upstream ``automojo.interfaces.icommandrunner.RunResult`` does
         # not carry a ``command`` field, so we record the argv the caller
-        # supplied.
+        # supplied.  This makes the shared dispatch credential-safe by
+        # construction: secret bytes routed via ``stdin`` never leak into
+        # the recorded result.  Per-OS managers handling passphrases (LUKS
+        # luksFormat, smbpasswd, kinit, etc.) can rely on this property
+        # without needing a SanitisedDispatchMixin — the shape of the
+        # shared RunResult enforces it.
         final_result = self._wrap_result(
             status=mapped_status,
             detail=detail,
