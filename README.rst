@@ -19,6 +19,12 @@ Highlights
   ``ActionStatus``, ``FeatureConfig``, ``FeatureActionResult``, and the
   host-OS-dispatch helpers (``detect_host_os``,
   ``normalise_override_host_os``) used by the UEFI tier.
+- **VPN client management base** (``vpnclientmanagementbase``) — the
+  ``VPNClientManagementBase`` cross-OS feature base for Tailscale and
+  Twingate, together with its shared types (``VPNClientManagerConfig``,
+  ``VPNClientStatus``, ``VPNClientQueryError``, ``VPNActionResult``,
+  ``VPNActionStatus``, ``VPNProvider``) that every per-OS sysman package
+  imports rather than re-vendors.
 - **No public CLI / no runtime services** — the package is pure
   foundation code, consumed as a dependency by every per-OS sysman
   package.

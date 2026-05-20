@@ -84,8 +84,15 @@
 
 ## Follow-ups
 
-- [ ] 30. Update the sysman-common `README.md` to list `vpn-client-management-base`
+- [x] 30. Update the sysman-common `README.md` to list `vpn-client-management-base`
   alongside the existing feature-base modules.
+  Done: added a "VPN client management base" highlight to `README.rst` listing
+  `VPNClientManagementBase` and its shared types alongside the other feature bases.
 
-- [ ] 31. Confirm per-OS implementations import `VPNClientManagementBase` and the
+- [x] 31. Confirm per-OS implementations import `VPNClientManagementBase` and the
   shared types from this module (no re-vendoring).
+  Confirmed: macOS, Windows, RHEL, and Ubuntu `vpnclientmanagement.py` all
+  `from automojo.sysman.common.vpnclientmanagementbase import VPNClientManagementBase`
+  and subclass it, and import the shared types (`VPNClientManagerConfig`,
+  `VPNClientStatus`, `VPNClientQueryError`) from `automojo.sysman.common.*` — no
+  re-vendoring.
