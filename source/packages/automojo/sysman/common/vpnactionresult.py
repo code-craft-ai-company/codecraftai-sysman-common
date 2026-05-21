@@ -7,6 +7,7 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
+from automojo.sysman.common.commandredaction import redact_command
 from automojo.sysman.common.vpnactionstatus import VPNActionStatus
 from automojo.sysman.common.vpnprovider import VPNProvider
 
@@ -16,6 +17,10 @@ class VPNActionResult:
     """
         Canonical per-operation result returned by every write verb on
         the vpn-client-management contract.
+
+        The ``command`` argv is scrubbed of vendor secrets (Tailscale
+        auth keys, Twingate tokens) at construction time so a result
+        object can never carry a secret into a log or a persisted file.
 
         :param status: Outcome category of the operation.
         :param provider: Provider the operation targeted.
@@ -33,6 +38,14 @@ class VPNActionResult:
     stdout: Optional[str] = None
     stderr: Optional[str] = None
     command: Optional[List[str]] = None
+
+    def __post_init__(self) -> None:
+        """
+            Redact any vendor secret embedded in the stored ``command``
+            argv immediately after construction.
+        """
+        self.command = redact_command(command=self.command)
+        return
 
 
 __all__ = ["VPNActionResult"]
