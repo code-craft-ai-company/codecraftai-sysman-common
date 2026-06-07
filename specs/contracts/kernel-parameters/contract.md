@@ -1,11 +1,11 @@
 # Kernel-Parameters Contract
 
 This is the cross-OS abstract contract for the **kernel-parameters**
-feature. Every `automojo-sysman-*` package that ships a kernel-
+feature. Every `codecraftai-sysman-*` package that ships a kernel-
 parameter manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-kernel-parameters/`](../../../../../automojo-sysman-linux-redhat/specs/3-kernel-parameters/).
+[`codecraftai-sysman-linux-redhat/specs/3-kernel-parameters/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-kernel-parameters/).
 It uses `sysctl` at runtime and drop-in files under `/etc/sysctl.d/`
 for persistence. This contract generalises the verb set across OSes
 with very different kernel-tuning surfaces.

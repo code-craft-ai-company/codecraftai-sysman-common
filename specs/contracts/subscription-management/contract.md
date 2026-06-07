@@ -1,12 +1,12 @@
 # Subscription-Management Contract
 
 This is the cross-OS abstract contract for the
-**subscription-management** feature. Every `automojo-sysman-*`
+**subscription-management** feature. Every `codecraftai-sysman-*`
 package that ships a subscription manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-subscription-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-subscription-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-subscription-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-subscription-management/).
 It wraps Red Hat Subscription Manager (`subscription-manager`)
 through an `ICommandRunner`.
 

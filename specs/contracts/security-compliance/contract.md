@@ -1,11 +1,11 @@
 # Security-Compliance Contract
 
 This is the cross-OS abstract contract for the **security-compliance**
-feature. Every `automojo-sysman-*` package that ships a security-
+feature. Every `codecraftai-sysman-*` package that ships a security-
 compliance manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-security-compliance/`](../../../../../automojo-sysman-linux-redhat/specs/3-security-compliance/).
+[`codecraftai-sysman-linux-redhat/specs/3-security-compliance/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-security-compliance/).
 It runs SELinux status checks, file-permission audits, SSH-config
 hardening, and world-writable / SUID / SGID discovery through an
 `ICommandRunner` and an `IFileOperator`. This contract generalises

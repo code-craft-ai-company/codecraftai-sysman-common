@@ -1,11 +1,11 @@
 # Log-Management Contract
 
 This is the cross-OS abstract contract for the **log-management**
-feature. Every `automojo-sysman-*` package that ships a log manager
+feature. Every `codecraftai-sysman-*` package that ships a log manager
 MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-log-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-log-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-log-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-log-management/).
 It uses `journalctl` for the systemd journal, `tail`/`grep` for
 plain log files, and `logrotate` with drop-ins under
 `/etc/logrotate.d/`. This contract generalises the verb set for

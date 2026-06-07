@@ -1,9 +1,9 @@
 ==============================
-Automation Mojo Sysman Common
+Code Craft AI Sysman Common
 ==============================
 
-The ``automojo-sysman-common`` package is the shared foundation for the
-``automojo-sysman-*`` system-management package family (RHEL, Ubuntu,
+The ``codecraftai-sysman-common`` package is the shared foundation for the
+``codecraftai-sysman-*`` system-management package family (RHEL, Ubuntu,
 macOS, Windows, UEFI). It hosts the cross-OS feature contracts that
 every per-OS sysman package implements, together with the shared base
 classes and helper utilities that the per-OS packages reuse.
@@ -15,7 +15,7 @@ Highlights
   markdown contracts that define the verbs, return shapes, status
   vocabulary, and invariants every per-OS sysman package implements.
 - **Shared base classes** under
-  ``source/packages/automojo/sysman/common/`` — ``BaseFeatureManager``,
+  ``source/packages/ccai/sysman/common/`` — ``BaseFeatureManager``,
   ``ActionStatus``, ``FeatureConfig``, ``FeatureActionResult``, and the
   host-OS-dispatch helpers (``detect_host_os``,
   ``normalise_override_host_os``) used by the UEFI tier.

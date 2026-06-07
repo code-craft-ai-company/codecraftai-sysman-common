@@ -3,15 +3,15 @@
     automatic redaction performed by :class:`VPNActionResult`.
 """
 
-from automojo.sysman.common.commandredaction import (
+from ccai.sysman.common.commandredaction import (
     REDACTED_PLACEHOLDER,
     redact_command,
     redact_secret_argument,
     redact_text,
 )
-from automojo.sysman.common.vpnactionresult import VPNActionResult
-from automojo.sysman.common.vpnactionstatus import VPNActionStatus
-from automojo.sysman.common.vpnprovider import VPNProvider
+from ccai.sysman.common.vpnactionresult import VPNActionResult
+from ccai.sysman.common.vpnactionstatus import VPNActionStatus
+from ccai.sysman.common.vpnprovider import VPNProvider
 
 
 def test_redacts_authkey_flag() -> None:

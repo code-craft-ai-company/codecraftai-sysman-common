@@ -1,25 +1,25 @@
-# Automation Mojo - Dual License - Software Services Agency License
+# Code Craft AI - Dual License - Software Services Agency License
 Version 1.0, November 2024
 
-Copyright (C) 2024, Automation Mojo LLC
+Copyright (C) 2024, Code Craft AI LLC
 
 Everyone is permitted to copy and distribute verbatim copies of *This License* document, but changing it is not allowed.
 
-This version of the Automation Mojo - Dual License - Software Services Agency License incorporates the terms and conditions of version 1 of the Automation Mojo - Dual License - Software Services Agency License and will just be refered to as *"this License"* or *"the License"* here in.
+This version of the Code Craft AI - Dual License - Software Services Agency License incorporates the terms and conditions of version 1 of the Code Craft AI - Dual License - Software Services Agency License and will just be refered to as *"this License"* or *"the License"* here in.
 
-All requests for changes to *this License*  must be submitted for review via pull request to the Automation Mojo *licenses* repository at:
+All requests for changes to *this License*  must be submitted for review via pull request to the Code Craft AI *licenses* repository at:
 
-    [Automation Mojo Licenses](https://github.com/automationmojo/licenses)
+    [Code Craft AI Licenses](https://github.com/automationmojo/licenses)
 
-Any requests for modifications to *This License* must be reviewed and approved by Automation Mojo LLC and its in house counsel.  Any party submitting a change request must pay for all expenses incurred as part of the review process.  Automation Mojo LLC reserves the right to deny any changes requested to the terms of this license.
+Any requests for modifications to *This License* must be reviewed and approved by Code Craft AI LLC and its in house counsel.  Any party submitting a change request must pay for all expenses incurred as part of the review process.  Code Craft AI LLC reserves the right to deny any changes requested to the terms of this license.
 
 ## 1. Common Definitions
 
 ### 1.1 *This License* or *The License*
-As used herein, **this License** or **the License** refers to version 1 of the Automation Mojo - Dual License - Software Services Agency License
+As used herein, **this License** or **the License** refers to version 1 of the Code Craft AI - Dual License - Software Services Agency License
 
 ### 1.2 Provider
-The term **Provider**, refers to Automation Mojo LLC..
+The term **Provider**, refers to Code Craft AI LLC..
 
 ### 1.3 The Software
 The term **The Software** refers to one or more software products, all under a common license as specified on an *Order Form*, that are provided by *Provider* to *Customer* the format(Object Code or Source Code) of such being specified on the *Order Form*
@@ -72,7 +72,7 @@ Notification of Use by *Customers* is crucial for *Provider* to be able to funct
 
 Properly obtaining the rights to Use *The Software*, regardless of whether you qualify for the *Free Use* service class, is the only way to obtain *Usage Rights* for *The Software*.  
 
-    http://automationmojo.com/products
+    http://code-craft.ai/products
 
 *Provider* reserves the right to change the criteria used to determine what *Parties* are entitle to use the *Free Use* class of services.
 

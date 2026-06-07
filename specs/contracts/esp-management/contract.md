@@ -1,11 +1,11 @@
 # ESP-Management Contract
 
 This is the cross-OS abstract contract for the **esp-management**
-feature. Every `automojo-sysman-*` package that ships an EFI System
+feature. Every `codecraftai-sysman-*` package that ships an EFI System
 Partition manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-uefi/specs/3-esp-management/`](../../../../../automojo-sysman-uefi/specs/3-esp-management/).
+[`codecraftai-sysman-uefi/specs/3-esp-management/`](../../../../../codecraftai-sysman-uefi/specs/3-esp-management/).
 It locates the ESP, mounts and unmounts it, enumerates its contents,
 and reads / writes / deletes files on it, using `findmnt`, `lsblk`,
 and `mount` on Linux hosts, `diskutil` on macOS hosts, and

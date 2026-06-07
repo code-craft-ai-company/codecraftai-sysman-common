@@ -1,11 +1,11 @@
 # Identity-Management Contract
 
 This is the cross-OS abstract contract for the
-**identity-management** feature. Every `automojo-sysman-*`
+**identity-management** feature. Every `codecraftai-sysman-*`
 package that ships an identity manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-identity-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-identity-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-identity-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-identity-management/).
 It wraps `realm`, `adcli`, `sssctl`, `kinit`, and direct edits to
 `/etc/sssd/` and `/etc/krb5.conf` through an `ICommandRunner`.
 This contract generalises the verb set for OSes whose identity

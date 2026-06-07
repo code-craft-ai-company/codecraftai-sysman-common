@@ -1,11 +1,11 @@
 # Container-Management Contract
 
 This is the cross-OS abstract contract for the
-**container-management** feature. Every `automojo-sysman-*`
+**container-management** feature. Every `codecraftai-sysman-*`
 package that ships a container manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-container-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-container-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-container-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-container-management/).
 It wraps Podman through an `ICommandRunner` (and MAY use an
 `IFileOperator` where available; the established pattern is to
 route file I/O through `ICommandRunner` — see the README

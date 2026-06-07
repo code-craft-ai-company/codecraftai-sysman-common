@@ -2,11 +2,11 @@
 
 This is the cross-OS abstract contract for the
 **certificate-trust-management** feature. Every
-`automojo-sysman-*` package that ships a certificate-trust
+`codecraftai-sysman-*` package that ships a certificate-trust
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-certificate-trust-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-certificate-trust-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-certificate-trust-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-certificate-trust-management/).
 It wraps `update-ca-trust`, `openssl`, and direct file
 operations under `/etc/pki/ca-trust/source/anchors/` through an
 `ICommandRunner` (and MAY use an `IFileOperator` where available;

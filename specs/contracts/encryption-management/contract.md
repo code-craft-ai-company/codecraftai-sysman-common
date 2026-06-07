@@ -1,12 +1,12 @@
 # Encryption-Management Contract
 
 This is the cross-OS abstract contract for the
-**encryption-management** feature. Every `automojo-sysman-*`
+**encryption-management** feature. Every `codecraftai-sysman-*`
 package that ships an encryption manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-encryption-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-encryption-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-encryption-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-encryption-management/).
 It wraps `cryptsetup`, `systemd-cryptenroll`, `clevis`, and
 direct edits to `/etc/crypttab` through an `ICommandRunner`.
 This contract generalises the verb set for OSes whose

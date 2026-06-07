@@ -1,11 +1,11 @@
 # Filesystem-Quotas Contract
 
 This is the cross-OS abstract contract for the
-**filesystem-quotas** feature. Every `automojo-sysman-*` package
+**filesystem-quotas** feature. Every `codecraftai-sysman-*` package
 that ships a filesystem-quotas manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-filesystem-quotas/`](../../../../../automojo-sysman-linux-redhat/specs/3-filesystem-quotas/).
+[`codecraftai-sysman-linux-redhat/specs/3-filesystem-quotas/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-filesystem-quotas/).
 It wraps `quotaon`, `quotaoff`, `quotacheck`, `setquota`,
 `repquota`, `edquota`, and `xfs_quota` through an
 `ICommandRunner`, auto-dispatching between XFS and ext-family

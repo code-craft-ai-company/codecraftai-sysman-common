@@ -1,11 +1,11 @@
 # Storage-Management Contract
 
 This is the cross-OS abstract contract for the
-**storage-management** feature. Every `automojo-sysman-*` package
+**storage-management** feature. Every `codecraftai-sysman-*` package
 that ships a storage manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-storage-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-storage-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-storage-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-storage-management/).
 It uses LVM (`pvcreate`, `vgcreate`, `lvcreate`, `lvextend`,
 `lvremove`, `vgs`, `lvs`, `pvs`) and optionally `mdadm` through
 an `ICommandRunner`. This contract generalises the verb set for

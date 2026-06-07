@@ -1,11 +1,11 @@
 # Tuned-Management Contract
 
 This is the cross-OS abstract contract for the
-**tuned-management** feature. Every `automojo-sysman-*` package
+**tuned-management** feature. Every `codecraftai-sysman-*` package
 that ships a tuned manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-tuned-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-tuned-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-tuned-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-tuned-management/).
 It wraps `tuned-adm`, `tuned.service`, and profile directories
 under `/etc/tuned/` and `/usr/lib/tuned/` through an
 `ICommandRunner`.

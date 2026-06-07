@@ -1,11 +1,11 @@
 # Process-Management Contract
 
 This is the cross-OS abstract contract for the
-**process-management** feature. Every `automojo-sysman-*` package
+**process-management** feature. Every `codecraftai-sysman-*` package
 that ships a process manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-process-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-process-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-process-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-process-management/).
 It uses `ps`, `kill`, `pkill`, `nice`, `renice`, and `/proc/<pid>/`
 through an `ICommandRunner` and an `IFileOperator`. This contract
 generalises the verb set for macOS (BSD `ps`, `kill`, `launchctl

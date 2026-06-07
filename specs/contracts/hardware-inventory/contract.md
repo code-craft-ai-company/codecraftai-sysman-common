@@ -1,12 +1,12 @@
 # Hardware-Inventory Contract
 
 This is the cross-OS abstract contract for the
-**hardware-inventory** feature. Every `automojo-sysman-*`
+**hardware-inventory** feature. Every `codecraftai-sysman-*`
 package that ships a hardware-inventory manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-hardware-inventory/`](../../../../../automojo-sysman-linux-redhat/specs/3-hardware-inventory/).
+[`codecraftai-sysman-linux-redhat/specs/3-hardware-inventory/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-hardware-inventory/).
 It wraps `dmidecode`, `lscpu`, `lsmem`, `lsblk`, `lspci`,
 `lsusb`, and sysfs reads through an `ICommandRunner` (and MAY
 use an `IFileOperator` where available; the established pattern

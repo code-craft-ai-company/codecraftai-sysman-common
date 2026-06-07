@@ -1,11 +1,11 @@
 # Secure-Boot Contract
 
 This is the cross-OS abstract contract for the **secure-boot**
-feature. Every `automojo-sysman-*` package that ships a Secure Boot
+feature. Every `codecraftai-sysman-*` package that ships a Secure Boot
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-uefi/specs/3-secure-boot/`](../../../../../automojo-sysman-uefi/specs/3-secure-boot/).
+[`codecraftai-sysman-uefi/specs/3-secure-boot/`](../../../../../codecraftai-sysman-uefi/specs/3-secure-boot/).
 It reads Secure Boot state from firmware, enumerates key slots
 (`PK`, `KEK`, `db`, `dbx`, and the MOK list on Linux hosts),
 dispatches MOK enrollment through `mokutil` on Linux hosts, and

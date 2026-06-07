@@ -1,12 +1,12 @@
 # Virtualization-Management Contract
 
 This is the cross-OS abstract contract for the
-**virtualization-management** feature. Every `automojo-sysman-*`
+**virtualization-management** feature. Every `codecraftai-sysman-*`
 package that ships a virtualization manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-virtualization-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-virtualization-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-virtualization-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-virtualization-management/).
 It uses KVM / libvirt through `virsh` and `virt-install` against
 an `ICommandRunner`. This contract generalises the verb set for
 macOS (HyperKit / Apple Virtualization framework, and

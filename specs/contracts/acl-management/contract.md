@@ -1,11 +1,11 @@
 # Acl-Management Contract
 
 This is the cross-OS abstract contract for the **acl-management**
-feature. Every `automojo-sysman-*` package that ships an ACL
+feature. Every `codecraftai-sysman-*` package that ships an ACL
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-acl-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-acl-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-acl-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-acl-management/).
 It wraps POSIX ACL tooling (`setfacl`, `getfacl`), extended
 attribute tooling (`chattr`, `lsattr`), and file capabilities
 (`setcap`, `getcap`) through an `ICommandRunner`. This contract

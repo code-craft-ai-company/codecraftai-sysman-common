@@ -1,12 +1,12 @@
 # Resource-Control-Management Contract
 
 This is the cross-OS abstract contract for the
-**resource-control-management** feature. Every `automojo-sysman-*`
+**resource-control-management** feature. Every `codecraftai-sysman-*`
 package that ships a resource-control manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-resource-control-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-resource-control-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-resource-control-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-resource-control-management/).
 It uses `systemctl set-property`, systemd drop-in files under
 `/etc/systemd/system/<unit>.d/`, `systemd-run`, and the
 `/sys/fs/cgroup/**` pseudo-filesystem. This contract generalises
@@ -315,9 +315,9 @@ deviations from the contract.
 - **Substrate divergence is structural.** Ubuntu uses systemd
   slice units (cgroups v2, `/etc/systemd/system/<name>.slice` +
   `/sys/fs/cgroup/<name>.slice/`); macOS uses launchd plists at
-  `/Library/LaunchDaemons/automojo-rc-<name>.plist` with
+  `/Library/LaunchDaemons/codecraftai-rc-<name>.plist` with
   `taskpolicy` for per-process attachment; Windows holds a
-  logical record at `%ProgramData%\Automojo\rcgroups\<name>.json`
+  logical record at `%ProgramData%\CodeCraftAI\rcgroups\<name>.json`
   applied via `Get-Process` because PowerShell exposes no clean
   Job Object cmdlets. The contract's group-container abstraction
   hides the substrate; the realisable feature surface does not.

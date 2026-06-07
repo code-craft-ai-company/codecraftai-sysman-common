@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The `vpn-client-management-base` feature provides `automojo-sysman-common` with the
+The `vpn-client-management-base` feature provides `codecraftai-sysman-common` with the
 OS-neutral abstract feature manager that per-OS subclasses extend to implement the
 [vpn-client-management contract](../contracts/vpn-client-management/contract.md).
 
@@ -37,7 +37,7 @@ import rather than by review.
 
 1. THE SYSTEM SHALL expose `VPNProvider`, `VPNActionStatus`, `VPNActionResult`,
    `VPNClientStatus`, `VPNClientManagerConfig`, and `VPNClientQueryError` from
-   `automojo.sysman.common.vpnclientmanagementbase`.
+   `ccai.sysman.common.vpnclientmanagementbase`.
 2. THE SYSTEM SHALL match the field names and types declared in the contract
    exactly.
 3. WHEN a per-OS subclass adds OS-specific fields to its config THE SYSTEM SHALL

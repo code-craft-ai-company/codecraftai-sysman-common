@@ -1,11 +1,11 @@
 # Maintenance-Reporting Contract
 
 This is the cross-OS abstract contract for the **maintenance-reporting**
-feature. Every `automojo-sysman-*` package that ships a maintenance
+feature. Every `codecraftai-sysman-*` package that ships a maintenance
 reporter MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/2-maintenance-reporting/`](../../../../../automojo-sysman-linux-redhat/specs/2-maintenance-reporting/).
+[`codecraftai-sysman-linux-redhat/specs/2-maintenance-reporting/`](../../../../../codecraftai-sysman-linux-redhat/specs/2-maintenance-reporting/).
 Maintenance-reporting is a Layer-2 feature: it is platform-agnostic
 by nature. The original RHEL design used `IFileOperator` to persist
 its serialised output; the established cross-OS pattern is to route
@@ -34,7 +34,7 @@ serialisable record of a maintenance session. It covers:
   touching the OS when `dry_run=True`.
 
 The feature is executed exclusively through an `ICommandRunner`
-(or, optionally, an `IFileOperator`) from `automojo-interfaces`.
+(or, optionally, an `IFileOperator`) from `codecraftai-interfaces`.
 No direct filesystem writes occur inside the module.
 
 ---

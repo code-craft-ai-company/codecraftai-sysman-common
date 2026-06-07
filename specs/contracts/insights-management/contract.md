@@ -1,11 +1,11 @@
 # Insights-Management Contract
 
 This is the cross-OS abstract contract for the
-**insights-management** feature. Every `automojo-sysman-*`
+**insights-management** feature. Every `codecraftai-sysman-*`
 package that ships an Insights manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-insights-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-insights-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-insights-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-insights-management/).
 It wraps the `insights-client` CLI and direct edits to
 `/etc/insights-client/insights-client.conf` and
 `/etc/insights-client/tags.yaml` through an `ICommandRunner` and

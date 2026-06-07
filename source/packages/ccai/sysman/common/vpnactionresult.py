@@ -7,9 +7,9 @@
 from dataclasses import dataclass
 from typing import List, Optional
 
-from automojo.sysman.common.commandredaction import redact_command
-from automojo.sysman.common.vpnactionstatus import VPNActionStatus
-from automojo.sysman.common.vpnprovider import VPNProvider
+from ccai.sysman.common.commandredaction import redact_command
+from ccai.sysman.common.vpnactionstatus import VPNActionStatus
+from ccai.sysman.common.vpnprovider import VPNProvider
 
 
 @dataclass

@@ -1,11 +1,11 @@
 # Dns-Server-Management Contract
 
 This is the cross-OS abstract contract for the
-**dns-server-management** feature. Every `automojo-sysman-*`
+**dns-server-management** feature. Every `codecraftai-sysman-*`
 package that ships a DNS-server manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-dns-server-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-dns-server-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-dns-server-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-dns-server-management/).
 It wraps BIND (`named-checkconf`, `named-checkzone`, `rndc`),
 Unbound (`unbound-checkconf`, `unbound-control`), and dnsmasq
 (`dnsmasq --test`) through an `ICommandRunner`. This contract

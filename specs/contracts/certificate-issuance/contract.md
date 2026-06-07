@@ -1,12 +1,12 @@
 # Certificate-Issuance Contract
 
 This is the cross-OS abstract contract for the
-**certificate-issuance** feature. Every `automojo-sysman-*`
+**certificate-issuance** feature. Every `codecraftai-sysman-*`
 package that ships a certificate-issuance manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-certificate-issuance/`](../../../../../automojo-sysman-linux-redhat/specs/3-certificate-issuance/).
+[`codecraftai-sysman-linux-redhat/specs/3-certificate-issuance/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-certificate-issuance/).
 It wraps `openssl`, `getcert` (certmonger), and `certbot` through
 an `ICommandRunner`. This contract generalises the verb set for
 OSes whose issuance surface is the Linux `openssl` / ACME /

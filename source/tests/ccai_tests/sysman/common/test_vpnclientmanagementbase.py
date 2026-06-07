@@ -11,10 +11,10 @@ from typing import Callable, Dict, List, Optional
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from automojo.aspects.aspects import Aspects
-from automojo.interfaces.icommandrunner import RunResult
+from ccai.aspects.aspects import Aspects
+from ccai.interfaces.icommandrunner import RunResult
 
-from automojo.sysman.common.vpnclientmanagementbase import (
+from ccai.sysman.common.vpnclientmanagementbase import (
     VERB_KIND_READ,
     VERB_KIND_WRITE,
     VPNActionResult,

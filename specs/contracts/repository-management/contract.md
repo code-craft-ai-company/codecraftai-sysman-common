@@ -1,11 +1,11 @@
 # Repository-Management Contract
 
 This is the cross-OS abstract contract for the **repository-management**
-feature. Every `automojo-sysman-*` package that ships a repository
+feature. Every `codecraftai-sysman-*` package that ships a repository
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-repository-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-repository-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-repository-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-repository-management/).
 It manages `/etc/yum.repos.d/*.repo` files and the `dnf
 config-manager` tool through an `ICommandRunner`. This contract
 generalises the verb set for OSes whose native repository concept

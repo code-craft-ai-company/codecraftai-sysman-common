@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "automojo-sysman-common"
-description = "Automation Mojo - System Management Common Foundation"
+name = "codecraftai-sysman-common"
+description = "Code Craft AI - System Management Common Foundation"
 version = "0.0.1"
 authors = []
 readme = "README.rst"
@@ -13,16 +13,16 @@ classifiers = [
 keywords = [
     "python"
 ]
-packages = [{include="automojo", from="source/packages"}]
+packages = [{include="ccai", from="source/packages"}]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
-automojo-errors = { git = "https://github.com/automationmojo/automojo-errors.git", branch = "main" }
-automojo-waiting = { git = "https://github.com/automationmojo/automojo-waiting.git", branch = "main" }
-automojo-interfaces = { git = "https://github.com/automationmojo/automojo-interfaces.git", branch = "main" }
+codecraftai-errors = { git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main" }
+codecraftai-waiting = { git = "https://github.com/automationmojo/codecraftai-waiting.git", branch = "main" }
+codecraftai-interfaces = { git = "https://github.com/automationmojo/codecraftai-interfaces.git", branch = "main" }
 
 [tool.poetry.group.dev.dependencies]
-automojo-testbase = { git = "https://github.com/automationmojo/automojo-testbase.git", branch = "main" }
+codecraftai-testbase = { git = "https://github.com/automationmojo/codecraftai-testbase.git", branch = "main" }
 
 [tool.poetry.group.dbio.dependencies]
 

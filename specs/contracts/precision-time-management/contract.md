@@ -1,12 +1,12 @@
 # Precision-Time-Management Contract
 
 This is the cross-OS abstract contract for the
-**precision-time-management** feature. Every `automojo-sysman-*`
+**precision-time-management** feature. Every `codecraftai-sysman-*`
 package that ships a precision-time manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-precision-time-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-precision-time-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-precision-time-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-precision-time-management/).
 The RHEL reference focuses on IEEE 1588 / PTP through `ptp4l`,
 `phc2sys`, and `pmc`; this cross-OS contract generalises the
 surface to cover chrony / `systemd-timesyncd` / `ntpd` on Linux,

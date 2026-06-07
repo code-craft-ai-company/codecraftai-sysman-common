@@ -1,12 +1,12 @@
 # Authentication-Management Contract
 
 This is the cross-OS abstract contract for the
-**authentication-management** feature. Every `automojo-sysman-*`
+**authentication-management** feature. Every `codecraftai-sysman-*`
 package that ships an authentication manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-authentication-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-authentication-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-authentication-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-authentication-management/).
 It wraps `authselect`, `/etc/pam.d/` drop-ins, `pwquality.conf`,
 `faillock.conf`, `/etc/security/limits.d/`, and
 `/etc/nsswitch.conf` through an `ICommandRunner`. This contract
