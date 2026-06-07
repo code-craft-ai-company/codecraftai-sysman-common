@@ -49,7 +49,17 @@ Tests should verify the functionality of individual components or functions in i
 
 Avoid composite tests that validate multiple components or functions in a series of assertions, as they lack proper isolation and can miss checks when an assertion fails.
 
-Use Python's `unittest` framework with `setUp` and `tearDown` methods to establish shared conditions across tests while maintaining separation of concerns.
+This package is shifting from Python's `unittest` framework to the `testbase` single-host test
+framework (Phase 7 of the testbase / integration-runtime refactor). Converted tests live under the
+shared featurebase testroot `source/testroots/testbase/automojo/tests/sysman/common/` as module-level
+`def test_*` functions — a raised `AssertionError` is a Failure; any other exception is an Error.
+Because `testbase` tests have no `setUp`/`tearDown`, shared per-test setup is replicated through
+module-level helper functions invoked at the start of each test, with cleanup in a `try`/`finally`
+block; `unittest.mock` is still used for mocking.
+
+Until the converted suite is green-verified in a rehomed environment (the standalone `testbase` CLI
+lands with the Phase 2-tail relocation), the legacy `unittest` suite under `source/tests/` remains the
+authoritative suite that the merge gate runs; the two suites are kept in parallel during the shift.
 
 # Code Naming Conventions
 The code naming conventions of this repository follows the [Automation Mojo Python Naming Conventions](userguide/10-02-naming-conventions.rst)
@@ -91,12 +101,18 @@ In order to run the unittest tests, you must first enter the virtual environment
 When you setup the environment, the '.venv/bin/activate' script is modified so that it will pull in the appropriate environment
 variables from the '.env' file.
 
-For running the 'unittest' tests located under the folder '<repository-root>/source/tests', use the command:
+For running the legacy 'unittest' tests under '<repository-root>/source/tests' (the authoritative suite during the shift), use:
 
 ```
     cd <repository-root>
 
     python -m unittest discover -s source/tests -p "test_*.py"
+```
+
+For the converted 'testbase' tests under the featurebase testroot (green-verified in a rehomed environment), use:
+
+```
+    testbase testing run --root source/testroots/testbase --includes=automojo.tests.sysman.common --output=./.output
 ```
 
 # Pull Request Guidelines
