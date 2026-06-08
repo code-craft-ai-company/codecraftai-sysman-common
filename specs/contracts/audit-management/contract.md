@@ -1,11 +1,11 @@
 # Audit-Management Contract
 
 This is the cross-OS abstract contract for the **audit-management**
-feature. Every `automojo-sysman-*` package that ships an audit
+feature. Every `codecraftai-sysman-*` package that ships an audit
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-audit-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-audit-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-audit-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-audit-management/).
 It wraps `auditctl`, `augenrules`, `ausearch`, `aureport`, and
 direct edits to `/etc/audit/auditd.conf` and
 `/etc/audit/rules.d/` through an `ICommandRunner` and

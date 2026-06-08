@@ -1,11 +1,11 @@
 # Bootloader-Management Contract
 
 This is the cross-OS abstract contract for the
-**bootloader-management** feature. Every `automojo-sysman-*`
+**bootloader-management** feature. Every `codecraftai-sysman-*`
 package that ships a bootloader manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-boot-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-boot-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-boot-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-boot-management/).
 It wraps `grubby`, `grub2-mkconfig`, and direct edits to
 `/etc/default/grub` through an `ICommandRunner` (and MAY use an
 `IFileOperator` where available; the established pattern is to

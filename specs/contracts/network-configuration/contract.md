@@ -1,11 +1,11 @@
 # Network-Configuration Contract
 
 This is the cross-OS abstract contract for the **network-configuration**
-feature. Every `automojo-sysman-*` package that ships a network
+feature. Every `codecraftai-sysman-*` package that ships a network
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-network-configuration/`](../../../../../automojo-sysman-linux-redhat/specs/3-network-configuration/).
+[`codecraftai-sysman-linux-redhat/specs/3-network-configuration/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-network-configuration/).
 It uses `hostnamectl`, `nmcli`, `chronyc`, and direct edits of
 `/etc/hosts` / `/etc/resolv.conf` / `/etc/chrony.conf` through an
 `ICommandRunner`. This contract generalises the verb set for OSes

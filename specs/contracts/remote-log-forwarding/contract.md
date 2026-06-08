@@ -1,12 +1,12 @@
 # Remote-Log-Forwarding Contract
 
 This is the cross-OS abstract contract for the
-**remote-log-forwarding** feature. Every `automojo-sysman-*`
+**remote-log-forwarding** feature. Every `codecraftai-sysman-*`
 package that ships a remote-log-forwarding manager MUST honor
 this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-remote-log-forwarding/`](../../../../../automojo-sysman-linux-redhat/specs/3-remote-log-forwarding/).
+[`codecraftai-sysman-linux-redhat/specs/3-remote-log-forwarding/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-remote-log-forwarding/).
 It manages rsyslog forward drop-ins under `/etc/rsyslog.d/`,
 `/etc/systemd/journal-upload.conf`, and journald-forward
 directives. This contract generalises the verb set for macOS

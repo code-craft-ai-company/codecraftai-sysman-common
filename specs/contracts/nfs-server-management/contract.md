@@ -1,11 +1,11 @@
 # NFS-Server-Management Contract
 
 This is the cross-OS abstract contract for the
-**nfs-server-management** feature. Every `automojo-sysman-*`
+**nfs-server-management** feature. Every `codecraftai-sysman-*`
 package that ships an NFS server manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-nfs-server-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-nfs-server-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-nfs-server-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-nfs-server-management/).
 It uses `exportfs`, `showmount`, and the content of `/etc/exports`
 and `/etc/exports.d/`. This contract generalises the verb set for
 macOS (`nfsd`, `/etc/exports`) and Windows (Server for NFS role

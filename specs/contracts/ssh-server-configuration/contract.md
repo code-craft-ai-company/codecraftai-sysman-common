@@ -1,12 +1,12 @@
 # SSH-Server-Configuration Contract
 
 This is the cross-OS abstract contract for the
-**ssh-server-configuration** feature. Every `automojo-sysman-*`
+**ssh-server-configuration** feature. Every `codecraftai-sysman-*`
 package that ships an SSH-server-configuration manager MUST honor
 this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-ssh-server-configuration/`](../../../../../automojo-sysman-linux-redhat/specs/3-ssh-server-configuration/).
+[`codecraftai-sysman-linux-redhat/specs/3-ssh-server-configuration/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-ssh-server-configuration/).
 It uses OpenSSH `sshd`, `sshd -t`, and `/etc/ssh/sshd_config`
 through an `ICommandRunner` and an `IFileOperator`. OpenSSH ships
 on all three supported OSes (`/etc/ssh/sshd_config` on Linux /

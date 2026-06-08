@@ -1,11 +1,11 @@
 # Environment-Configuration Contract
 
 This is the cross-OS abstract contract for the **environment-configuration**
-feature. Every `automojo-sysman-*` package that ships an environment
+feature. Every `codecraftai-sysman-*` package that ships an environment
 configurator MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-environment-configuration/`](../../../../../automojo-sysman-linux-redhat/specs/3-environment-configuration/).
+[`codecraftai-sysman-linux-redhat/specs/3-environment-configuration/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-environment-configuration/).
 It writes `/etc/profile.d/*.sh`, `/etc/environment`, and per-user rc
 files. The original RHEL design used an `IFileOperator`; cross-OS
 implementations route file I/O through `ICommandRunner` using

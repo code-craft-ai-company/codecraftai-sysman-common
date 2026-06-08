@@ -1,11 +1,11 @@
 # Cockpit-Management Contract
 
 This is the cross-OS abstract contract for the
-**cockpit-management** feature. Every `automojo-sysman-*`
+**cockpit-management** feature. Every `codecraftai-sysman-*`
 package that ships a Cockpit manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-cockpit-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-cockpit-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-cockpit-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-cockpit-management/).
 It wraps `systemctl` against `cockpit.socket`, reads
 `/usr/share/cockpit/*/manifest.json`, writes drop-ins under
 `/etc/systemd/system/cockpit.socket.d/` and

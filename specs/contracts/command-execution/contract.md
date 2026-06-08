@@ -1,11 +1,11 @@
 # Command-Execution Contract
 
 This is the cross-OS abstract contract for the **command-execution**
-feature. Every `automojo-sysman-*` package that ships a command
+feature. Every `codecraftai-sysman-*` package that ships a command
 executor MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/1-command-execution/`](../../../../../automojo-sysman-linux-redhat/specs/1-command-execution/).
+[`codecraftai-sysman-linux-redhat/specs/1-command-execution/`](../../../../../codecraftai-sysman-linux-redhat/specs/1-command-execution/).
 It is the foundational Layer-1 feature that every Layer-3 manager
 depends on through the `ICommandRunner` interface, and this abstract
 contract defines the shape every OS must honor for local and remote
@@ -31,7 +31,7 @@ dispatch of OS-level commands through an `ICommandRunner`. It covers:
   executor does not distinguish reads from writes — the caller does).
 
 The feature is executed exclusively through an `ICommandRunner` from
-`automojo-interfaces`. No direct `subprocess`, no direct daemon-socket
+`codecraftai-interfaces`. No direct `subprocess`, no direct daemon-socket
 calls, and no direct filesystem writes except for the one short-lived
 temp-file used by `run_script`.
 

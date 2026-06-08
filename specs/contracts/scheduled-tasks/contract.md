@@ -1,11 +1,11 @@
 # Scheduled-Tasks Contract
 
 This is the cross-OS abstract contract for the **scheduled-tasks**
-feature. Every `automojo-sysman-*` package that ships a scheduled-
+feature. Every `codecraftai-sysman-*` package that ships a scheduled-
 task manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-scheduled-tasks/`](../../../../../automojo-sysman-linux-redhat/specs/3-scheduled-tasks/).
+[`codecraftai-sysman-linux-redhat/specs/3-scheduled-tasks/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-scheduled-tasks/).
 It manages cron drop-ins under `/etc/cron.d/` and systemd timer +
 service unit pairs through an `ICommandRunner` and an
 `IFileOperator`. This contract generalises the verb set for OSes

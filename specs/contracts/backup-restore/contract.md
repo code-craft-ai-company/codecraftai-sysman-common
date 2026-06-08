@@ -1,17 +1,17 @@
 # Backup-Restore Contract
 
 This is the cross-OS abstract contract for the **backup-restore**
-feature. Every `automojo-sysman-*` package that ships a backup
+feature. Every `codecraftai-sysman-*` package that ships a backup
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-backup-restore/`](../../../../../automojo-sysman-linux-redhat/specs/3-backup-restore/).
+[`codecraftai-sysman-linux-redhat/specs/3-backup-restore/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-backup-restore/).
 It wraps `tar`, `rsync`, `sha256sum`, and `openssl enc` through
 an `ICommandRunner` (and MAY use an `IFileOperator` where
 available; the established pattern is to route file I/O through
 `ICommandRunner` — see the README "Implementation Conventions"
 section), with a repository
-layout under `/var/lib/automojo/backups/`. This contract
+layout under `/var/lib/ccai/backups/`. This contract
 generalises the verb set for OSes whose backup surface is the
 Linux archive family (`tar`, `rsync`, `restic`), macOS Time
 Machine (`tmutil`) supplemented by `rsync`, or Windows

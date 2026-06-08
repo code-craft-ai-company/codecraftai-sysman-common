@@ -1,11 +1,11 @@
 # SELinux-Management Contract
 
 This is the cross-OS abstract contract for the
-**selinux-management** feature. Every `automojo-sysman-*` package
+**selinux-management** feature. Every `codecraftai-sysman-*` package
 that ships an SELinux manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-selinux-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-selinux-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-selinux-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-selinux-management/).
 It uses `getenforce`, `setenforce`, `semanage`, `getsebool`,
 `setsebool`, `restorecon`, and `/etc/selinux/config` through an
 `ICommandRunner` and an `IFileOperator`.

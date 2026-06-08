@@ -1,14 +1,14 @@
 # VPN-Client-Management Contract
 
 This is the cross-OS abstract contract for the **vpn-client-management**
-feature. Every `automojo-sysman-*` package that ships a VPN-client
+feature. Every `codecraftai-sysman-*` package that ships a VPN-client
 manager MUST honor this contract.
 
 The contract covers installation and lifecycle of mesh-VPN client
 daemons on a host — primarily **Tailscale** (`tailscaled`) and
 **Twingate Connector** (`twingate-connector`). It does NOT cover the
 control-plane API surface (auth-key minting, ACL push, device
-deletion). Those live in `automojo-interop` (`IVPNControlPlane`).
+deletion). Those live in `codecraftai-interop` (`IVPNControlPlane`).
 
 The host-side feature is small but uniform: install the daemon,
 configure it, start it, bring the tunnel up against a tailnet / network,
@@ -30,7 +30,7 @@ control over the locally-installed mesh-VPN client. It covers:
 - Uninstalling the daemon and removing residual state.
 
 The feature is executed exclusively through an `ICommandRunner` from
-`automojo-interfaces`. Configuration writes route through the runner
+`codecraftai-interfaces`. Configuration writes route through the runner
 using `tee` / `Set-Content` / equivalent — never direct filesystem I/O.
 
 ---

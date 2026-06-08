@@ -1,11 +1,11 @@
 # Filesystem-Management Contract
 
 This is the cross-OS abstract contract for the **filesystem-management**
-feature. Every `automojo-sysman-*` package that ships a filesystem
+feature. Every `codecraftai-sysman-*` package that ships a filesystem
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-filesystem-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-filesystem-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-filesystem-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-filesystem-management/).
 It uses `mount`, `umount`, `findmnt`, `stat`, `df`, `mkdir`, `rm`,
 `chmod`, `chown`, and `/etc/fstab` rewrites through an
 `ICommandRunner`. This contract generalises that shape for OSes

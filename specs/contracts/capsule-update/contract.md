@@ -1,11 +1,11 @@
 # Capsule-Update Contract
 
 This is the cross-OS abstract contract for the **capsule-update**
-feature. Every `automojo-sysman-*` package that ships a capsule-
+feature. Every `codecraftai-sysman-*` package that ships a capsule-
 update manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-uefi/specs/3-capsule-update/`](../../../../../automojo-sysman-uefi/specs/3-capsule-update/).
+[`codecraftai-sysman-uefi/specs/3-capsule-update/`](../../../../../codecraftai-sysman-uefi/specs/3-capsule-update/).
 It wraps `fwupdmgr` on Linux hosts (the canonical UEFI capsule-
 update surface), reports via `softwareupdate` on macOS hosts (which
 do not expose capsule updates directly — the manager reports macOS-

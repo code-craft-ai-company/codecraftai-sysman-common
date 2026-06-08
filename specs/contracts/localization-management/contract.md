@@ -1,11 +1,11 @@
 # Localization-Management Contract
 
 This is the cross-OS abstract contract for the
-**localization-management** feature. Every `automojo-sysman-*`
+**localization-management** feature. Every `codecraftai-sysman-*`
 package that ships a localization manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-localization-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-localization-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-localization-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-localization-management/).
 It uses `localectl`, `timedatectl`, and `/etc/locale.conf` through
 an `ICommandRunner`. This contract generalises the verb set for
 OSes whose native locale / keymap / timezone surface is `defaults

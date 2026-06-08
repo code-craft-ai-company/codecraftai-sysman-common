@@ -1,11 +1,11 @@
 # Firewall-Management Contract
 
 This is the cross-OS abstract contract for the **firewall-management**
-feature. Every `automojo-sysman-*` package that ships a firewall
+feature. Every `codecraftai-sysman-*` package that ships a firewall
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-firewall-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-firewall-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-firewall-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-firewall-management/).
 It uses `firewalld` via `firewall-cmd` and is the basis for the
 abstract shape defined here.
 
@@ -28,7 +28,7 @@ configuration. It covers:
   contacting the OS.
 
 The feature is executed exclusively through an `ICommandRunner` from
-`automojo-interfaces`. No direct `subprocess`, no direct filesystem
+`codecraftai-interfaces`. No direct `subprocess`, no direct filesystem
 writes, no direct daemon-socket calls.
 
 ---
@@ -172,7 +172,7 @@ each OS's firewall:
 |----|----------------|-------|
 | Red Hat Enterprise Linux (firewalld) | Zone | Canonical. |
 | Ubuntu (ufw) | Single global policy — `zone` is validated to be `"default"`. | ufw has no zones. Passing any other value MUST return `FirewallActionResult` with `status=FAILED` and a `detail` explaining that ufw supports only the `"default"` zone. |
-| macOS (pf) | Anchor | The anchor named by `zone` is the pf sub-ruleset that receives the rule. Convention: `/etc/pf.anchors/automojo.<zone>`. |
+| macOS (pf) | Anchor | The anchor named by `zone` is the pf sub-ruleset that receives the rule. Convention: `/etc/pf.anchors/ccai.<zone>`. |
 | Windows (NetSecurity) | Profile | Maps to Windows Firewall profile: `Domain`, `Private`, `Public`, or `Any`. Any other value MUST return `FAILED`. |
 | UEFI | N/A | UEFI has no firewall concept. The firewall-management contract does not apply. |
 

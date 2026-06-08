@@ -1,11 +1,11 @@
 # Boot-Management Contract
 
 This is the cross-OS abstract contract for the **boot-management**
-feature. Every `automojo-sysman-*` package that ships a boot manager
+feature. Every `codecraftai-sysman-*` package that ships a boot manager
 MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-uefi/specs/3-boot-management/`](../../../../../automojo-sysman-uefi/specs/3-boot-management/).
+[`codecraftai-sysman-uefi/specs/3-boot-management/`](../../../../../codecraftai-sysman-uefi/specs/3-boot-management/).
 It manages UEFI boot entries and boot order using `efibootmgr` on
 Linux hosts, `bless` and `nvram` on macOS hosts, and `bcdedit` on
 Windows hosts, all through an `ICommandRunner`. This contract
@@ -35,7 +35,7 @@ over a host's firmware boot entries and boot order. It covers:
   contacting the firmware.
 
 The feature is executed exclusively through an `ICommandRunner` from
-`automojo-interfaces`. No direct `subprocess`, no direct NVRAM
+`codecraftai-interfaces`. No direct `subprocess`, no direct NVRAM
 writes, no direct firmware-variable access.
 
 ---

@@ -21,16 +21,16 @@ import os
 from abc import ABC, abstractmethod
 from typing import Dict, Iterable, List, Optional
 
-from automojo.aspects.aspects import Aspects
-from automojo.interfaces.icommandrunner import ICommandRunner, RunResult
+from ccai.aspects.aspects import Aspects
+from ccai.interfaces.icommandrunner import ICommandRunner, RunResult
 
-from automojo.sysman.common.featurebase import BaseFeatureManager
-from automojo.sysman.common.vpnactionresult import VPNActionResult
-from automojo.sysman.common.vpnactionstatus import VPNActionStatus
-from automojo.sysman.common.vpnclientmanagerconfig import VPNClientManagerConfig
-from automojo.sysman.common.vpnclientqueryerror import VPNClientQueryError
-from automojo.sysman.common.vpnclientstatus import VPNClientStatus
-from automojo.sysman.common.vpnprovider import VPNProvider
+from ccai.sysman.common.featurebase import BaseFeatureManager
+from ccai.sysman.common.vpnactionresult import VPNActionResult
+from ccai.sysman.common.vpnactionstatus import VPNActionStatus
+from ccai.sysman.common.vpnclientmanagerconfig import VPNClientManagerConfig
+from ccai.sysman.common.vpnclientqueryerror import VPNClientQueryError
+from ccai.sysman.common.vpnclientstatus import VPNClientStatus
+from ccai.sysman.common.vpnprovider import VPNProvider
 
 
 VERB_KIND_READ = "READ"

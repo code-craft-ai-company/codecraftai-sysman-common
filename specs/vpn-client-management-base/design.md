@@ -4,7 +4,7 @@
 
 `VPNClientManagementBase` is the shared abstract feature manager for the
 vpn-client-management contract. It lives in
-`automojo.sysman.common.vpnclientmanagementbase` and is the only place the
+`ccai.sysman.common.vpnclientmanagementbase` and is the only place the
 contract's enums, dataclasses, exceptions, and verb signatures are defined.
 Per-OS subclasses (`UbuntuVPNClientManager`, `RedHatVPNClientManager`,
 `MacosVPNClientManager`, `WindowsVPNClientManager`) inherit from this base,
@@ -24,7 +24,7 @@ the subclass, which forwards `aspects` to the runner. The base owns:
 **See Also:**
 - [vpn-client-management contract](../contracts/vpn-client-management/contract.md)
 - [BaseFeatureManager](../design.md) in sysman-common
-- Per-OS implementations under `automojo-sysman-{ubuntu,redhat,macos,windows}/specs/3-vpn-client-management/`
+- Per-OS implementations under `codecraftai-sysman-{ubuntu,redhat,macos,windows}/specs/3-vpn-client-management/`
 
 ---
 
@@ -181,12 +181,12 @@ contains only command construction and idempotency-guard logic.
 ## Module Layout
 
 ```
-source/packages/automojo/sysman/common/
+source/packages/ccai/sysman/common/
 ├── featurebase.py                       (existing — BaseFeatureManager)
 └── vpnclientmanagementbase.py           (this spec)
 
 source/testroots/testbase/
-└── automojo/tests/sysman/common/
+└── ccai/tests/sysman/common/
     └── test_vpnclientmanagementbase.py
 ```
 
@@ -195,8 +195,8 @@ source/testroots/testbase/
 ## See Also
 
 - [vpn-client-management contract](../contracts/vpn-client-management/contract.md)
-- [automojo-interfaces IVPNClient](../../../automojo-interfaces/specs/) — peer-facing protocol
-- Per-OS implementations under `automojo-sysman-*/specs/3-vpn-client-management/`
+- [codecraftai-interfaces IVPNClient](../../../codecraftai-interfaces/specs/) — peer-facing protocol
+- Per-OS implementations under `codecraftai-sysman-*/specs/3-vpn-client-management/`
 
 ---
 

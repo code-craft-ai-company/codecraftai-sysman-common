@@ -1,11 +1,11 @@
 # Package-Management Contract
 
 This is the cross-OS abstract contract for the **package-management**
-feature. Every `automojo-sysman-*` package that ships a package
+feature. Every `codecraftai-sysman-*` package that ships a package
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-package-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-package-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-package-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-package-management/).
 It uses `dnf` and `rpm` through an `ICommandRunner`. This contract
 generalises the verb set for OSes whose native package manager is
 `apt`, `brew`, `pkg`, `winget`, `Chocolatey`, or the Microsoft

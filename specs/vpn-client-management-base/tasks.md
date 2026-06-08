@@ -2,7 +2,7 @@
 
 ## Module and Types
 
-- [x] 1. Create the `automojo.sysman.common.vpnclientmanagementbase` module.
+- [x] 1. Create the `ccai.sysman.common.vpnclientmanagementbase` module.
 
 - [x] 2. Define the `VPNProvider` enum (`TAILSCALE`, `TWINGATE`).
 
@@ -92,7 +92,7 @@
 - [x] 31. Confirm per-OS implementations import `VPNClientManagementBase` and the
   shared types from this module (no re-vendoring).
   Confirmed: macOS, Windows, RHEL, and Ubuntu `vpnclientmanagement.py` all
-  `from automojo.sysman.common.vpnclientmanagementbase import VPNClientManagementBase`
+  `from ccai.sysman.common.vpnclientmanagementbase import VPNClientManagementBase`
   and subclass it, and import the shared types (`VPNClientManagerConfig`,
-  `VPNClientStatus`, `VPNClientQueryError`) from `automojo.sysman.common.*` — no
+  `VPNClientStatus`, `VPNClientQueryError`) from `ccai.sysman.common.*` — no
   re-vendoring.

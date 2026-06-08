@@ -1,11 +1,11 @@
 # Configuration-Management Contract
 
 This is the cross-OS abstract contract for the **configuration-management**
-feature. Every `automojo-sysman-*` package that ships a configuration
+feature. Every `codecraftai-sysman-*` package that ships a configuration
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-configuration-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-configuration-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-configuration-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-configuration-management/).
 It treats configuration files as the unit of management, using `cat`,
 `tee`, `cp`, `chmod`, and `chown` through an `ICommandRunner`. This
 contract generalises that shape for OSes whose configuration surface

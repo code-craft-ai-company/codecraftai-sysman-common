@@ -1,12 +1,12 @@
 # Samba-Server-Management Contract
 
 This is the cross-OS abstract contract for the
-**samba-server-management** feature. Every `automojo-sysman-*`
+**samba-server-management** feature. Every `codecraftai-sysman-*`
 package that ships a Samba / SMB-server manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-samba-server-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-samba-server-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-samba-server-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-samba-server-management/).
 It manages `/etc/samba/smb.conf`, validates via `testparm`, and
 drives `smbpasswd` / `pdbedit` / `net ads` / `wbinfo` through an
 `ICommandRunner`. This contract generalises the verb set for

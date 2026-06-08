@@ -1,11 +1,11 @@
 # Service-Management Contract
 
 This is the cross-OS abstract contract for the **service-management**
-feature. Every `automojo-sysman-*` package that ships a service
+feature. Every `codecraftai-sysman-*` package that ships a service
 manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-service-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-service-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-service-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-service-management/).
 It uses `systemctl` and `journalctl` through an `ICommandRunner`.
 This contract generalises the verb set for OSes whose native service
 surface is launchd (macOS) or the Service Control Manager / `sc.exe`

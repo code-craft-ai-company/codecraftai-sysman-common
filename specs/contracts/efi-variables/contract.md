@@ -1,11 +1,11 @@
 # EFI-Variables Contract
 
 This is the cross-OS abstract contract for the **efi-variables**
-feature. Every `automojo-sysman-*` package that ships an EFI
+feature. Every `codecraftai-sysman-*` package that ships an EFI
 variable manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-uefi/specs/3-efi-variables/`](../../../../../automojo-sysman-uefi/specs/3-efi-variables/).
+[`codecraftai-sysman-uefi/specs/3-efi-variables/`](../../../../../codecraftai-sysman-uefi/specs/3-efi-variables/).
 It reads, writes, deletes, and enumerates EFI NVRAM variables
 through `efivar` and the `/sys/firmware/efi/efivars` filesystem on
 Linux hosts, through `nvram` on macOS hosts, and through the

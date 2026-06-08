@@ -1,28 +1,28 @@
 # Sysman Contracts
 
 This folder contains **cross-OS abstract contracts** that the
-`automojo-sysman-*` packages implement. A contract defines, for a given
+`codecraftai-sysman-*` packages implement. A contract defines, for a given
 feature area (firewall management, service management, package
 management, …), the verbs, return types, invariants, and execution
 model that every OS-specific implementation must honor.
 
-The contracts live in the dedicated `automojo-sysman-common`
-package, separate from `automojo-interfaces` (which is reserved
+The contracts live in the dedicated `codecraftai-sysman-common`
+package, separate from `codecraftai-interfaces` (which is reserved
 for low-level cross-cutting Python protocols like
-`ICommandRunner` and `IFileOperator`). `automojo-sysman-common`
+`ICommandRunner` and `IFileOperator`). `codecraftai-sysman-common`
 is the shared foundation for every per-OS sysman package and
 hosts both these contracts and the shared `featurebase.py`
 module they all extend.
 
 ## Why a contract layer?
 
-The `automojo-sysman-linux-redhat` package is the canonical
+The `codecraftai-sysman-linux-redhat` package is the canonical
 implementation reference. Its spec architecture — layer-numbered
 folders (`1-`, `2-`, `3-`), `requirements.md` / `design.md` /
 `tasks.md` per feature, idempotent operations expressed through an
 `ICommandRunner` — is being replicated across the
-`automojo-sysman-linux-ubuntu`, `automojo-sysman-macos`,
-`automojo-sysman-windows`, and (narrower) `automojo-sysman-uefi`
+`codecraftai-sysman-linux-ubuntu`, `codecraftai-sysman-macos`,
+`codecraftai-sysman-windows`, and (narrower) `codecraftai-sysman-uefi`
 packages.
 
 Without a shared contract the four packages would drift:
@@ -123,7 +123,7 @@ is `None` only on `SKIPPED` results that short-circuit before
 construction of the argv.
 
 The field does NOT appear on the upstream
-`automojo.interfaces.icommandrunner.RunResult` — it is a convenience
+`ccai.interfaces.icommandrunner.RunResult` — it is a convenience
 for callers that want to log, replay, or diff the exact argv without
 re-deriving it from `detail`. Contracts whose data-model tables omit
 `command` SHOULD be read as if `command` were present; new contracts
@@ -366,12 +366,12 @@ here over inventing a one-off token in a single per-OS spec.
 ## How a per-OS spec references the contract
 
 Each per-OS feature spec (e.g.,
-`automojo-sysman-linux-ubuntu/specs/3-firewall-management/`) opens
+`codecraftai-sysman-linux-ubuntu/specs/3-firewall-management/`) opens
 with a reference to the contract:
 
 ```markdown
 This spec implements the firewall-management contract defined at
-`automojo-interfaces/specs/sysman-contracts/firewall-management/contract.md`
+`codecraftai-interfaces/specs/sysman-contracts/firewall-management/contract.md`
 for Ubuntu (and Debian-family) Linux hosts using `ufw`.
 ```
 
@@ -465,7 +465,7 @@ per-OS implementation must honor it, and it doesn't change when
 someone opens a man page.
 
 A per-OS `design.md` / `requirements.md` / `tasks.md` set
-(e.g., `automojo-sysman-linux-ubuntu/specs/3-<feature>/`) pins
+(e.g., `codecraftai-sysman-linux-ubuntu/specs/3-<feature>/`) pins
 down OS-specific commands, flag strings, output parsers, and
 idempotency guards. These details are only reliable once they have
 been tested against a live system — speculative ahead-of-code
@@ -506,4 +506,4 @@ as patterns):
 
 All other contracts (the 30 drafted during Phase 3a/3b) do not have
 per-OS specs yet. They will be written alongside the implementation
-work for each `automojo-sysman-*` package, not ahead of it.
+work for each `codecraftai-sysman-*` package, not ahead of it.

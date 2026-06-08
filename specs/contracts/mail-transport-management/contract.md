@@ -1,12 +1,12 @@
 # Mail-Transport-Management Contract
 
 This is the cross-OS abstract contract for the
-**mail-transport-management** feature. Every `automojo-sysman-*`
+**mail-transport-management** feature. Every `codecraftai-sysman-*`
 package that ships a mail-transport manager MUST honor this
 contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-mail-transport-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-mail-transport-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-mail-transport-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-mail-transport-management/).
 It wraps `postconf`, `postmap`, `newaliases`, `postqueue`, `mailq`,
 and `postsuper` against a Postfix MTA and manages `/etc/aliases`
 and `/etc/postfix/main.cf`. This contract generalises the verb set

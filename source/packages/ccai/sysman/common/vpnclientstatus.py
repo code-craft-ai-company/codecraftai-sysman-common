@@ -7,7 +7,7 @@
 from dataclasses import dataclass, field
 from typing import Dict, Optional
 
-from automojo.sysman.common.vpnprovider import VPNProvider
+from ccai.sysman.common.vpnprovider import VPNProvider
 
 
 def _empty_peer_addresses() -> Dict[str, str]:

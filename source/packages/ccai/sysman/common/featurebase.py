@@ -1,5 +1,5 @@
 """
-    Canonical shared featurebase for automojo-sysman-* packages.
+    Canonical shared featurebase for codecraftai-sysman-* packages.
 
     Hosts the cross-OS base classes and helpers that every per-OS sysman
     package extends:
@@ -16,7 +16,7 @@
           manager uses to route mutating commands through the injected
           ``ICommandRunner``.
 
-    UEFI-host-dispatch additions used by the ``automojo-sysman-uefi``
+    UEFI-host-dispatch additions used by the ``codecraftai-sysman-uefi``
     package (and ignored by the per-OS packages that do not need
     cross-host dispatch):
 
@@ -39,7 +39,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
-from automojo.interfaces.icommandrunner import ICommandRunner, RunResult
+from ccai.interfaces.icommandrunner import ICommandRunner, RunResult
 
 
 HOST_OS_LINUX = "linux"
@@ -280,7 +280,7 @@ class BaseFeatureManager:
         else:
             mapped_status = self.status_class.FAILED
 
-        # The upstream ``automojo.interfaces.icommandrunner.RunResult`` does
+        # The upstream ``ccai.interfaces.icommandrunner.RunResult`` does
         # not carry a ``command`` field, so we record the argv the caller
         # supplied.  This makes the shared dispatch credential-safe by
         # construction: secret bytes routed via ``stdin`` never leak into

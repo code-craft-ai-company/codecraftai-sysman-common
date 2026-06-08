@@ -1,11 +1,11 @@
 # User-Group-Management Contract
 
 This is the cross-OS abstract contract for the **user-group-management**
-feature. Every `automojo-sysman-*` package that ships a user and
+feature. Every `codecraftai-sysman-*` package that ships a user and
 group manager MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-user-group-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-user-group-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-user-group-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-user-group-management/).
 It uses `useradd`, `userdel`, `usermod`, `groupadd`, `groupdel`,
 `gpasswd`, `passwd`, `chage`, and `getent` through an
 `ICommandRunner`. This contract generalises the verb set for OSes

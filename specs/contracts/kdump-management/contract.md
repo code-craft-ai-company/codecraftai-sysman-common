@@ -1,11 +1,11 @@
 # Kdump-Management Contract
 
 This is the cross-OS abstract contract for the **kdump-management**
-feature. Every `automojo-sysman-*` package that ships a kdump manager
+feature. Every `codecraftai-sysman-*` package that ships a kdump manager
 MUST honor this contract.
 
 The reference implementation is
-[`automojo-sysman-linux-redhat/specs/3-kdump-management/`](../../../../../automojo-sysman-linux-redhat/specs/3-kdump-management/).
+[`codecraftai-sysman-linux-redhat/specs/3-kdump-management/`](../../../../../codecraftai-sysman-linux-redhat/specs/3-kdump-management/).
 It uses `kdumpctl`, `kdump.service`, `/etc/kdump.conf`, and the
 `crashkernel=` kernel command-line reservation. Kdump is a
 **Linux-primary feature**; macOS and Windows implementations MUST
