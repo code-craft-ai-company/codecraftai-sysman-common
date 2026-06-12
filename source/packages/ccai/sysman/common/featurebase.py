@@ -41,6 +41,8 @@ from typing import Optional
 
 from ccai.interfaces.icommandrunner import ICommandRunner, RunResult
 
+from ccai.sysman.common.commandredaction import redact_command
+
 
 HOST_OS_LINUX = "linux"
 HOST_OS_DARWIN = "darwin"
@@ -282,19 +284,19 @@ class BaseFeatureManager:
 
         # The upstream ``ccai.interfaces.icommandrunner.RunResult`` does
         # not carry a ``command`` field, so we record the argv the caller
-        # supplied.  This makes the shared dispatch credential-safe by
-        # construction: secret bytes routed via ``stdin`` never leak into
-        # the recorded result.  Per-OS managers handling passphrases (LUKS
-        # luksFormat, smbpasswd, kinit, etc.) can rely on this property
-        # without needing a SanitisedDispatchMixin — the shape of the
-        # shared RunResult enforces it.
+        # supplied.  The shared dispatch is credential-safe by design —
+        # secret bytes are routed via ``stdin`` and never placed on argv —
+        # but we additionally run the recorded argv through ``redact_command``
+        # as defense-in-depth, so a per-OS manager that mistakenly puts a
+        # secret on the command line still cannot leak it into a logged or
+        # persisted result (matching the VPNActionResult redaction path).
         final_result = self._wrap_result(
             status=mapped_status,
             detail=detail,
             exit_code=run_result.exit_code,
             stdout=run_result.stdout,
             stderr=run_result.stderr,
-            command=command_copy,
+            command=redact_command(command=command_copy),
             **extra,
         )
         return final_result

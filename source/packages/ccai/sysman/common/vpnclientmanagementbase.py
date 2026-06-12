@@ -356,6 +356,7 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
         run_result: RunResult = self._runner.run(
             command_copy,
             elevated=run_elevated,
+            timeout=aspects.connection_timeout,
         )
 
         if run_result.exit_code == 0:
