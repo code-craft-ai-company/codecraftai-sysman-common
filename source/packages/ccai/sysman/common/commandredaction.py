@@ -10,11 +10,20 @@
 """
 
 import os
+import re
 
 from typing import List, Optional
 
 
 REDACTED_PLACEHOLDER = "***"
+
+# The Windows vpn-client-management renderer stages secret file content
+# (Tailscale auth key, Twingate connector config) by base64-encoding it
+# into a PowerShell ``FromBase64String('<payload>')`` scriptblock. base64
+# is trivially reversible, so the encoded payload is a secret that must be
+# scrubbed from any recorded/logged command. This pattern captures that
+# payload; base64 contains no single quote so ``[^']*`` bounds it exactly.
+_FROM_BASE64_STRING_PATTERN = re.compile(r"FromBase64String\('([^']*)'\)")
 
 # Long-option flags whose ``=value`` payload is a secret.  Matching is
 # done against the portion of an argv token preceding the first ``=``.
@@ -71,6 +80,27 @@ def redact_secret_argument(*, argument: str) -> str:
     return rtnval
 
 
+def _redact_base64_staged_content(*, argument: str) -> str:
+    """
+        Redact the base64 payload inside any PowerShell
+        ``FromBase64String('<payload>')`` construct within an argv token.
+
+        A token that contains no such construct is returned unchanged.
+
+        :param argument: A single argv token.
+
+        :returns: The token with any base64-staged payload replaced by
+                  the redaction placeholder.
+    """
+    if argument is None:
+        rtnval = argument
+        return rtnval
+
+    replacement = "FromBase64String('{}')".format(REDACTED_PLACEHOLDER)
+    rtnval = _FROM_BASE64_STRING_PATTERN.sub(replacement, argument)
+    return rtnval
+
+
 def redact_command(
     *,
     command: Optional[List[str]],
@@ -79,8 +109,10 @@ def redact_command(
         Return a copy of an argv list with every secret-bearing token
         replaced by the redaction placeholder.
 
-        Both the ``--flag=secret`` and ``--flag secret`` forms are
-        handled.  ``None`` is returned unchanged.
+        The ``--flag=secret`` and ``--flag secret`` forms are handled,
+        as is the Windows ``FromBase64String('<payload>')`` staging form
+        used to write secret file content via PowerShell.  ``None`` is
+        returned unchanged.
 
         :param command: The argv list to redact, or ``None``.
 
@@ -104,6 +136,7 @@ def redact_command(
             continue
 
         safe_token = redact_secret_argument(argument=token)
+        safe_token = _redact_base64_staged_content(argument=safe_token)
         redacted.append(safe_token)
 
     rtnval = redacted

@@ -3,6 +3,7 @@
     automatic redaction performed by :class:`VPNActionResult`.
 """
 
+import base64
 import unittest
 
 from ccai.sysman.common.commandredaction import (
@@ -133,6 +134,64 @@ class TestVPNActionResultRedaction(unittest.TestCase):
             command=None,
         )
         self.assertIsNone(result.command)
+        return
+
+
+class TestRedactBase64StagedContent(unittest.TestCase):
+    """
+        Coverage for redaction of the Windows ``FromBase64String``
+        secret-staging form (Tailscale auth key, Twingate config).
+    """
+
+    def _staged_command(self, secret: str) -> list:
+        encoded = base64.b64encode(secret.encode("utf-8")).decode("ascii")
+        script = (
+            "$content = [System.Text.Encoding]::UTF8.GetString("
+            "[System.Convert]::FromBase64String('{}')); "
+            "[System.IO.File]::WriteAllText('C:\\Temp\\authkey', $content, "
+            "(New-Object System.Text.UTF8Encoding $false))"
+        ).format(encoded)
+        rtnval = ["powershell.exe", "-NoProfile", "-Command", script]
+        return rtnval
+
+    def test_redact_command_scrubs_base64_staged_secret(self) -> None:
+        secret = "tskey-auth-SUPERSECRET123456"
+        encoded = base64.b64encode(secret.encode("utf-8")).decode("ascii")
+        command = self._staged_command(secret=secret)
+
+        redacted = redact_command(command=command)
+        joined = " ".join(redacted)
+
+        self.assertNotIn(secret, joined)
+        self.assertNotIn(encoded, joined)
+        self.assertIn("FromBase64String('***')", joined)
+        return
+
+    def test_vpnactionresult_scrubs_base64_staged_secret(self) -> None:
+        secret = "twingate-setup-token-ABCDEF"
+        encoded = base64.b64encode(secret.encode("utf-8")).decode("ascii")
+        command = self._staged_command(secret=secret)
+
+        result = VPNActionResult(
+            status=VPNActionStatus.SUCCESS,
+            provider=VPNProvider.TWINGATE,
+            detail="stage_config",
+            exit_code=0,
+            stdout=None,
+            stderr=None,
+            command=command,
+        )
+        joined = " ".join(result.command)
+
+        self.assertNotIn(secret, joined)
+        self.assertNotIn(encoded, joined)
+        self.assertIn("FromBase64String('***')", joined)
+        return
+
+    def test_non_base64_command_untouched(self) -> None:
+        command = ["powershell.exe", "-Command", "Get-Service -Name tailscale"]
+        redacted = redact_command(command=command)
+        self.assertEqual(redacted, command)
         return
 
 
