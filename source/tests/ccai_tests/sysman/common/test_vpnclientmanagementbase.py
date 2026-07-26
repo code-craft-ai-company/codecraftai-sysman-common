@@ -8,8 +8,8 @@ import unittest
 
 from typing import Callable, Dict, List, Optional
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
+from ccai.testbase.properties import given
+from ccai.testbase.properties import strategies as st
 
 from ccai.aspects.aspects import Aspects
 from ccai.interfaces.icommandrunner import RunResult
@@ -590,7 +590,6 @@ class IdempotencyPropertyTests(unittest.TestCase):
         version=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
         channel=st.sampled_from(["stable", "unstable", "beta"]),
     )
-    @settings(max_examples=25, deadline=None)
     def test_property_install_is_idempotent(
         self, version: Optional[str], channel: str
     ) -> None:
@@ -606,8 +605,7 @@ class IdempotencyPropertyTests(unittest.TestCase):
         self.assertEqual(second.status, VPNActionStatus.SKIPPED)
         return
 
-    @given(purge=st.booleans())
-    @settings(max_examples=10, deadline=None)
+    @given(purge=st.booleans(), constraints={"max_examples": 25})
     def test_property_uninstall_is_idempotent(self, purge: bool) -> None:
         runner = _MockRunner()
         manager = _FakeVPNClientManager(runner=runner)
@@ -625,10 +623,10 @@ class IdempotencyPropertyTests(unittest.TestCase):
         return
 
     @given(
+    constraints={"max_examples": 10},
         authkey=st.text(min_size=1, max_size=16),
         hostname=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
     )
-    @settings(max_examples=20, deadline=None)
     def test_property_bring_up_idempotent_on_matching_state(
         self, authkey: str, hostname: Optional[str]
     ) -> None:
@@ -676,10 +674,10 @@ class DryRunPropertyTests(unittest.TestCase):
     """
 
     @given(
+    constraints={"max_examples": 20},
         version=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
         channel=st.sampled_from(["stable", "unstable"]),
     )
-    @settings(max_examples=25, deadline=None)
     def test_property_dry_run_never_invokes_runner(
         self, version: Optional[str], channel: str
     ) -> None:
@@ -701,10 +699,10 @@ class ElevationPropertyTests(unittest.TestCase):
     """
 
     @given(
+    constraints={"max_examples": 25},
         elevated=st.booleans(),
         kind=st.sampled_from([VERB_KIND_READ, VERB_KIND_WRITE]),
     )
-    @settings(max_examples=20, deadline=None)
     def test_property_elevation_truth_table(self, elevated: bool, kind: str) -> None:
         runner = _MockRunner()
         manager = _FakeVPNClientManager(

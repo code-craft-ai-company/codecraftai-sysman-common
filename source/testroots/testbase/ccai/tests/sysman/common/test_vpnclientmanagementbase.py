@@ -13,8 +13,8 @@ import dataclasses
 
 from typing import Callable, Dict, List, Optional, Tuple
 
-from hypothesis import given, settings
-from hypothesis import strategies as st
+from ccai.testbase.properties import given
+from ccai.testbase.properties import strategies as st
 
 from ccai.aspects.aspects import Aspects
 from ccai.interfaces.icommandrunner import RunResult
@@ -556,7 +556,6 @@ def test_abstract_class_cannot_instantiate_without_overrides() -> None:
     version=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
     channel=st.sampled_from(["stable", "unstable", "beta"]),
 )
-@settings(max_examples=25, deadline=None)
 def test_property_install_is_idempotent(
     version: Optional[str], channel: str
 ) -> None:
@@ -573,8 +572,7 @@ def test_property_install_is_idempotent(
     return
 
 
-@given(purge=st.booleans())
-@settings(max_examples=10, deadline=None)
+@given(purge=st.booleans(), constraints={"max_examples": 25})
 def test_property_uninstall_is_idempotent(purge: bool) -> None:
     runner = _MockRunner()
     manager = _FakeVPNClientManager(runner=runner)
@@ -593,10 +591,10 @@ def test_property_uninstall_is_idempotent(purge: bool) -> None:
 
 
 @given(
+    constraints={"max_examples": 10},
     authkey=st.text(min_size=1, max_size=16),
     hostname=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
 )
-@settings(max_examples=20, deadline=None)
 def test_property_bring_up_idempotent_on_matching_state(
     authkey: str, hostname: Optional[str]
 ) -> None:
@@ -640,10 +638,10 @@ def test_property_bring_down_idempotent_on_matching_state() -> None:
 
 
 @given(
+    constraints={"max_examples": 20},
     version=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
     channel=st.sampled_from(["stable", "unstable"]),
 )
-@settings(max_examples=25, deadline=None)
 def test_property_dry_run_never_invokes_runner(
     version: Optional[str], channel: str
 ) -> None:
@@ -660,10 +658,10 @@ def test_property_dry_run_never_invokes_runner(
 
 
 @given(
+    constraints={"max_examples": 25},
     elevated=st.booleans(),
     kind=st.sampled_from([VERB_KIND_READ, VERB_KIND_WRITE]),
 )
-@settings(max_examples=20, deadline=None)
 def test_property_elevation_truth_table(elevated: bool, kind: str) -> None:
     runner = _MockRunner()
     manager = _FakeVPNClientManager(
