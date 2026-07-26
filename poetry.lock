@@ -393,7 +393,7 @@ pyyaml = "^6.0.2"
 type = "git"
 url = "https://github.com/automationmojo/codecraftai-testbase.git"
 reference = "main"
-resolved_reference = "1b7eb659093974fa1276a56ab5f9f5d525e01b2e"
+resolved_reference = "66afd67f8738a78c9f09246d14a16829509f8955"
 
 [[package]]
 name = "codecraftai-this-app"
