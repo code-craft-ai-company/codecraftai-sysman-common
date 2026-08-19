@@ -11,14 +11,14 @@ files = []
 develop = false
 
 [package.dependencies]
-codecraftai-errors = {git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main"}
+codecraftai-errors = {git = "https://github.com/code-craft-ai-company/codecraftai-errors.git", branch = "main"}
 pyyaml = "^6.0.2"
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-arcli.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-arcli.git"
 reference = "main"
-resolved_reference = "a78f75ba5c1e4d2d07c1c50e235cb815a9eb9e83"
+resolved_reference = "9c5b205b8070f13351e6efecd768d65befed7634"
 
 [[package]]
 name = "codecraftai-errors"
@@ -32,7 +32,7 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-errors.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-errors.git"
 reference = "main"
 resolved_reference = "bbc01a9b9e7602c225ffab0716bc6e56b472e4b4"
 
@@ -48,7 +48,7 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-extension.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-extension.git"
 reference = "main"
 resolved_reference = "154a29978e55f7c0aedf19d65420ab705db876f7"
 
@@ -63,13 +63,13 @@ files = []
 develop = false
 
 [package.dependencies]
-codecraftai-errors = {git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main"}
+codecraftai-errors = {git = "https://github.com/code-craft-ai-company/codecraftai-errors.git", branch = "main"}
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-interfaces.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-interfaces.git"
 reference = "main"
-resolved_reference = "4b86d4488e7a502c56947ff94f798a01a0fa829a"
+resolved_reference = "fb4b5d4206109ec14d3dcda9e11a2208b312c9e2"
 
 [[package]]
 name = "codecraftai-runtime"
@@ -82,13 +82,13 @@ files = []
 develop = false
 
 [package.dependencies]
-codecraftai-this-app = {git = "https://github.com/automationmojo/codecraftai-this-app.git", branch = "main"}
+codecraftai-this-app = {git = "https://github.com/code-craft-ai-company/codecraftai-this-app.git", branch = "main"}
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-runtime.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-runtime.git"
 reference = "main"
-resolved_reference = "7371b4ad6c9aff0e51f9b1e176edecc61d2ccf1b"
+resolved_reference = "e866ffebe817f317c79315b923bde6f84edd4b75"
 
 [[package]]
 name = "codecraftai-testbase"
@@ -101,20 +101,20 @@ files = []
 develop = false
 
 [package.dependencies]
-codecraftai-arcli = {git = "https://github.com/automationmojo/codecraftai-arcli.git", branch = "main"}
-codecraftai-errors = {git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main"}
-codecraftai-interfaces = {git = "https://github.com/automationmojo/codecraftai-interfaces.git", branch = "main"}
-codecraftai-runtime = {git = "https://github.com/automationmojo/codecraftai-runtime.git", branch = "main"}
-codecraftai-this-app = {git = "https://github.com/automationmojo/codecraftai-this-app.git", branch = "main"}
-codecraftai-waiting = {git = "https://github.com/automationmojo/codecraftai-waiting.git", branch = "main"}
-codecraftai-xmodules = {git = "https://github.com/automationmojo/codecraftai-xmodules.git", branch = "main"}
+codecraftai-arcli = {git = "https://github.com/code-craft-ai-company/codecraftai-arcli.git", branch = "main"}
+codecraftai-errors = {git = "https://github.com/code-craft-ai-company/codecraftai-errors.git", branch = "main"}
+codecraftai-interfaces = {git = "https://github.com/code-craft-ai-company/codecraftai-interfaces.git", branch = "main"}
+codecraftai-runtime = {git = "https://github.com/code-craft-ai-company/codecraftai-runtime.git", branch = "main"}
+codecraftai-this-app = {git = "https://github.com/code-craft-ai-company/codecraftai-this-app.git", branch = "main"}
+codecraftai-waiting = {git = "https://github.com/code-craft-ai-company/codecraftai-waiting.git", branch = "main"}
+codecraftai-xmodules = {git = "https://github.com/code-craft-ai-company/codecraftai-xmodules.git", branch = "main"}
 pyyaml = "^6.0.2"
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-testbase.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-testbase.git"
 reference = "main"
-resolved_reference = "3781e78cca0f6251385743a205190bf01d5908f0"
+resolved_reference = "be253c1bad84496665fe17ee88177863993e3947"
 
 [[package]]
 name = "codecraftai-this-app"
@@ -127,15 +127,15 @@ files = []
 develop = false
 
 [package.dependencies]
-codecraftai-errors = {git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main"}
-codecraftai-extension = {git = "https://github.com/automationmojo/codecraftai-extension.git", branch = "main"}
-codecraftai-xmodules = {git = "https://github.com/automationmojo/codecraftai-xmodules.git", branch = "main"}
+codecraftai-errors = {git = "https://github.com/code-craft-ai-company/codecraftai-errors.git", branch = "main"}
+codecraftai-extension = {git = "https://github.com/code-craft-ai-company/codecraftai-extension.git", branch = "main"}
+codecraftai-xmodules = {git = "https://github.com/code-craft-ai-company/codecraftai-xmodules.git", branch = "main"}
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-this-app.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-this-app.git"
 reference = "main"
-resolved_reference = "9852466b74364db9d2caa2dd5db9dc3c6b22ec5d"
+resolved_reference = "8e222142ac6ba7ccf4f833b53bb67660b888bca7"
 
 [[package]]
 name = "codecraftai-waiting"
@@ -149,7 +149,7 @@ develop = false
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-waiting.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-waiting.git"
 reference = "main"
 resolved_reference = "071b83b5ff6ce8cb8966aee7e6a2de97a6e926d1"
 
@@ -164,15 +164,15 @@ files = []
 develop = false
 
 [package.dependencies]
-codecraftai-errors = {git = "https://github.com/automationmojo/codecraftai-errors.git", branch = "main"}
-codecraftai-waiting = {git = "https://github.com/automationmojo/codecraftai-waiting.git", branch = "main"}
+codecraftai-errors = {git = "https://github.com/code-craft-ai-company/codecraftai-errors.git", branch = "main"}
+codecraftai-waiting = {git = "https://github.com/code-craft-ai-company/codecraftai-waiting.git", branch = "main"}
 debugpy = "^1.8.14"
 
 [package.source]
 type = "git"
-url = "https://github.com/automationmojo/codecraftai-xmodules.git"
+url = "https://github.com/code-craft-ai-company/codecraftai-xmodules.git"
 reference = "main"
-resolved_reference = "7c2935cf442e9e1747765f820d9ea811b85756c0"
+resolved_reference = "aa6007a13842bbe98a1c22147e2b6b8391481053"
 
 [[package]]
 name = "debugpy"
@@ -300,4 +300,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "3f6a7c02e0a18922c3173a7f27e7b0576255383c8cf8b7baeb21bd7c59c8276b"
+content-hash = "521f7d6fe5ec21c281404adda83296b3f89535bad5c1a407f30d6c5490370c63"
