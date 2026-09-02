@@ -420,6 +420,12 @@ for contract conformance:
   environment.
 - Registering the environment with a service unit (see
   `service-management`).
+- First-boot deployment before any runner can reach the host. That
+  path exists — `codecraftai-provisioning/specs/python-env-bootstrap/`
+  renders a `PythonEnvironmentSpec` (`ccai.interfaces.pythonenvspec`)
+  into cloud-init with the same step order and pip argv as `deploy`,
+  so a later run of this contract's manager converges as `SKIPPED` —
+  but it is a provisioning feature, not part of this contract.
 
 ---
 
