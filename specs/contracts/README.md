@@ -197,7 +197,12 @@ the Windows surface includes this extra field. Managers SHOULD pass
 the field through onto the corresponding action-result `detail`
 field (commonly as `detail="elevation_blocked"`) so coordinators can
 distinguish elevation failures from real command failures without
-parsing stderr.
+parsing stderr. Since Phase 4 the shared `BaseFeatureManager._dispatch`
+does this automatically: any `RunResult` with a truthy
+`elevation_blocked` attribute yields `detail=DETAIL_ELEVATION_BLOCKED`
+(`"elevation_blocked"`), so every manager that routes writes through
+`_dispatch` conforms without per-OS code. Managers that call the
+runner directly (the Windows VPN manager) keep their own pass-through.
 
 ### 7. Reads degrade gracefully; raising is the exception, not the rule
 

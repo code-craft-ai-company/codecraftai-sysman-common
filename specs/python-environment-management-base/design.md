@@ -171,11 +171,14 @@ cost of a false "not satisfied" is one redundant pip call; the cost of a false
 
 ## Dispatch and Redaction
 
-`_dispatch_write` calls the runner directly rather than through
-`BaseFeatureManager._dispatch` because it needs the raw `RunResult` to read the
-Windows `elevation_blocked` extension (Convention 6) and map it to
-`detail="elevation_blocked"`.  It otherwise mirrors `_dispatch`: exit 0 → `SUCCESS`,
-else `FAILED`; recorded `command` passes through `redact_command`.
+`_dispatch_write` is a thin wrapper over `BaseFeatureManager._dispatch` that
+passes `detail=path` and echoes `path` / `packages` as extra result fields.  The
+shared helper maps exit 0 → `SUCCESS`, else `FAILED`; redacts the recorded
+`command`; and (since Phase 4) replaces `detail` with the stable token
+`DETAIL_ELEVATION_BLOCKED` when the runner's `RunResult` carries a truthy
+`elevation_blocked` attribute (Convention 6).  The base originally called the
+runner itself to read that attribute; the pass-through was upstreamed into
+`_dispatch` so every manager benefits.
 
 `redact_command` gained URL-userinfo scrubbing for this feature.  The runner
 receives the real `--index-url https://user:token@host/simple`; the result, any
@@ -238,7 +241,7 @@ still gets pip upgraded when the config asks for it.
 17. **Reads never elevate.** Every probe and read passes `elevated=False`.
 18. **Writes elevate when configured.** Every write passes `elevated=config.elevated`.
 19. **Elevation-blocked token.** A truthy `elevation_blocked` on the `RunResult`
-    sets `detail="elevation_blocked"`.
+    sets `detail="elevation_blocked"` (delivered by the shared `_dispatch`).
 20. **Redaction.** URL userinfo never appears on a recorded `command`; the runner
     still receives it.
 21. **Probe table.** Each row of the contract's requirement-probe table holds.

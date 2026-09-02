@@ -29,9 +29,11 @@ contract updates that emerge as new per-OS implementations land.
 - [x] testbase suite `test_pythonenvironmentmanagementbase.py` (54
   tests) plus the legacy `unittest` mirror; URL-redaction tests in
   both redaction suites.
-- [ ] Follow-up: once `BaseFeatureManager._dispatch` learns to
-  surface `elevation_blocked`, drop the local `_dispatch_write` in
-  the python-environment base in favour of the shared helper.
+- [x] `BaseFeatureManager._dispatch` surfaces a Windows runner's
+  `elevation_blocked` as `detail=DETAIL_ELEVATION_BLOCKED` (Convention
+  6, upstreamed from the python-environment base); the python-environment
+  base's `_dispatch_write` now delegates to it. `test_featurebase.py`
+  added in both suites (2026-09-02).
 - [x] Update `codecraftai-books` volume 04 (README, chapters 1–4,
   `research/code-anchors.md`) and the series index for the new
   contract and the concrete-base pattern; reconciled the stale

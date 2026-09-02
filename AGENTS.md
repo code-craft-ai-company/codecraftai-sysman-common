@@ -34,8 +34,9 @@ macOS, Windows, UEFI). It hosts:
 - **Shared base classes and helpers** under
   `source/packages/ccai/sysman/common/`:
   - `featurebase.py` — `BaseFeatureManager`, `ActionStatus`,
-    `FeatureConfig`, `FeatureActionResult`, and the host-OS-dispatch
-    helpers used by the UEFI tier.
+    `FeatureConfig`, `FeatureActionResult`, the host-OS-dispatch
+    helpers used by the UEFI tier, and the `elevation_blocked` →
+    `DETAIL_ELEVATION_BLOCKED` pass-through in `_dispatch`.
   - `commandredaction.py` — argv / text secret redaction (VPN tokens,
     base64-staged PowerShell payloads, URL userinfo).
   - `vpnclientmanagementbase.py` and its sibling model modules — the

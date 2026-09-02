@@ -432,6 +432,12 @@ Phase 4 implementation notes (initial landing):
   packages add ~150 lines each. Contracts that predate this pattern
   put the verbs in each OS package; this one deliberately does not,
   because the underlying tools do not vary by OS.
+- **Writes go through the shared `_dispatch`.** The base's
+  `_dispatch_write` is a thin wrapper over
+  `BaseFeatureManager._dispatch`, which since Phase 4 surfaces the
+  Windows `elevation_blocked` extension as `detail="elevation_blocked"`
+  itself. `DETAIL_ELEVATION_BLOCKED` is defined in `featurebase` and
+  re-exported by the python-environment base.
 - **Two-layer idempotency probe for `create_environment`.** A
   directory that exists but whose interpreter fails to run
   (half-created venv, wrong architecture after an OS upgrade) is

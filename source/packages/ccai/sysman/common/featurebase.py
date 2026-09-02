@@ -30,6 +30,17 @@
         * ``_build_failed_unsupported`` constructs a stable
           ``FAILED`` result for verbs with no scriptable
           implementation on the given host OS.
+
+    Windows elevation-blocked pass-through (Convention 6):
+
+        * When the runner's ``RunResult`` carries a truthy
+          ``elevation_blocked`` attribute (the Windows runners set it
+          when ``elevated=True`` was requested but the process holds no
+          Administrator token), ``_dispatch`` replaces ``detail`` with
+          the stable token :data:`DETAIL_ELEVATION_BLOCKED` so
+          coordinators can distinguish a refused elevation from a real
+          command failure without parsing stderr.  POSIX runners never
+          set the attribute, so the branch is inert there.
 """
 
 import os
@@ -55,6 +66,10 @@ _PLATFORM_TO_HOST_OS = {
     "Darwin":  HOST_OS_DARWIN,
     "Windows": HOST_OS_WINDOWS,
 }
+
+# Stable detail token recorded on a FAILED result when the runner refused
+# the call because the process is not elevated (Windows runners only).
+DETAIL_ELEVATION_BLOCKED = "elevation_blocked"
 
 
 def detect_host_os() -> str:
@@ -253,7 +268,9 @@ class BaseFeatureManager:
             :param extra: Extra keyword arguments forwarded to
                           :meth:`_wrap_result`.
 
-            :returns: The wrapped :class:`FeatureActionResult`.
+            :returns: The wrapped :class:`FeatureActionResult`.  When the
+                      runner reports ``elevation_blocked``, ``detail`` is
+                      the stable token :data:`DETAIL_ELEVATION_BLOCKED`.
         """
         command_copy = list(command)
 
@@ -282,6 +299,17 @@ class BaseFeatureManager:
         else:
             mapped_status = self.status_class.FAILED
 
+        # Convention 6: a Windows runner that refused the call for lack of
+        # an Administrator token reports ``elevation_blocked=True``.  The
+        # stable token replaces the caller's detail so the condition is
+        # machine-detectable on the result; the runner's stderr still
+        # carries the human-readable explanation.
+        elevation_blocked = getattr(run_result, "elevation_blocked", False)
+        if elevation_blocked:
+            final_detail: Optional[str] = DETAIL_ELEVATION_BLOCKED
+        else:
+            final_detail = detail
+
         # The upstream ``ccai.interfaces.icommandrunner.RunResult`` does
         # not carry a ``command`` field, so we record the argv the caller
         # supplied.  The shared dispatch is credential-safe by design —
@@ -292,7 +320,7 @@ class BaseFeatureManager:
         # persisted result (matching the VPNActionResult redaction path).
         final_result = self._wrap_result(
             status=mapped_status,
-            detail=detail,
+            detail=final_detail,
             exit_code=run_result.exit_code,
             stdout=run_result.stdout,
             stderr=run_result.stderr,

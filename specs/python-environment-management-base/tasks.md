@@ -35,7 +35,8 @@ items (`[ ]`) identify remaining work.
 - [x] 16. Read surface — `environment_exists`, `is_valid_environment`,
   `get_python_version`, `list_installed`, `get_package_info`,
   `is_package_installed`, `freeze`, `get_environment_info`
-- [x] 17. `_dispatch_write` — elevation, redaction, `elevation_blocked` token
+- [x] 17. `_dispatch_write` — thin wrapper over the shared `_dispatch` (elevation,
+  redaction, `elevation_blocked` token all inherited)
 - [x] 18. Requirement probe — `_parse_requirement`, `_clause_satisfied`,
   `_version_tuple`, `_normalise_name`
 
@@ -62,8 +63,8 @@ items (`[ ]`) identify remaining work.
 - [ ] 30. Property-based tests (hypothesis via `ccai.testbase.properties`) for the
   requirement probe and the deploy aggregate, once the property-test harness is
   green-verified in a rehomed environment
-- [ ] 31. Route `_dispatch_write` through `BaseFeatureManager._dispatch` when the
-  shared helper learns to surface `elevation_blocked`
+- [x] 31. Route `_dispatch_write` through `BaseFeatureManager._dispatch`; the
+  shared helper now surfaces `elevation_blocked` (2026-09-02)
 - [ ] 32. Optional `chown` / ownership step after an elevated create (delegate to
   `acl-management` / `user-group-management`), tracked as a contract extension
 - [ ] 33. Hash-checking mode (`--require-hashes`) and lock-file support as an

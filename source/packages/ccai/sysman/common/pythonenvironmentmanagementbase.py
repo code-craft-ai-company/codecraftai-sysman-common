@@ -51,10 +51,11 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import List, Optional, Tuple
 
-from ccai.interfaces.icommandrunner import ICommandRunner, RunResult
+from ccai.interfaces.icommandrunner import ICommandRunner
 
 from ccai.sysman.common.commandredaction import redact_command
 from ccai.sysman.common.featurebase import (
+    DETAIL_ELEVATION_BLOCKED,
     ActionStatus,
     BaseFeatureManager,
     FeatureActionResult,
@@ -105,8 +106,6 @@ _MESSAGE_ENV_NOT_FOUND = "environment does not exist"
 _MESSAGE_PACKAGES_SATISFIED = "every requested package is already installed"
 _MESSAGE_PACKAGES_NOT_INSTALLED = "none of the requested packages are installed"
 _MESSAGE_PIP_UPGRADE_FAILED = "environment created but the pip upgrade failed"
-
-DETAIL_ELEVATION_BLOCKED = "elevation_blocked"
 
 
 PythonEnvActionStatus = ActionStatus
@@ -1037,13 +1036,18 @@ class PythonEnvironmentManagementBase(BaseFeatureManager, ABC):
         packages: Optional[List[str]] = None,
     ) -> PythonEnvActionResult:
         """
-            Run a write command through the runner and map the
-            :class:`RunResult` to a :class:`PythonEnvActionResult`.
+            Run a write command through the shared
+            :meth:`BaseFeatureManager._dispatch` helper, echoing ``path``
+            and ``packages`` onto the result.
 
             Callers perform dry-run and idempotency checks before
-            invoking this helper.  A runner that exposes the Windows
-            ``elevation_blocked`` extension has that surfaced as the
-            stable ``detail`` token ``elevation_blocked``.
+            invoking this helper (``_dispatch`` would honour dry-run too,
+            but the callers short-circuit earlier so the probe is never
+            issued).  Elevation follows ``config.elevated``; the recorded
+            ``command`` is redacted; a Windows runner's
+            ``elevation_blocked`` extension is surfaced by ``_dispatch``
+            as the stable ``detail`` token
+            :data:`DETAIL_ELEVATION_BLOCKED`.
 
             :param command: The argv to execute.
             :param path: The environment root echoed onto the result.
@@ -1051,31 +1055,9 @@ class PythonEnvironmentManagementBase(BaseFeatureManager, ABC):
 
             :returns: The :class:`PythonEnvActionResult`.
         """
-        command_copy = list(command)
-
-        run_result: RunResult = self._runner.run(
-            command_copy,
-            elevated=self._config.elevated,
-        )
-
-        if run_result.exit_code == 0:
-            mapped_status = PythonEnvActionStatus.SUCCESS
-        else:
-            mapped_status = PythonEnvActionStatus.FAILED
-
-        elevation_blocked = getattr(run_result, "elevation_blocked", False)
-        if elevation_blocked:
-            detail: Optional[str] = DETAIL_ELEVATION_BLOCKED
-        else:
-            detail = path
-
-        rtnval = PythonEnvActionResult(
-            status=mapped_status,
-            detail=detail,
-            exit_code=run_result.exit_code,
-            stdout=run_result.stdout,
-            stderr=run_result.stderr,
-            command=redact_command(command=command_copy),
+        rtnval = self._dispatch(
+            command=command,
+            detail=path,
             path=path,
             packages=packages,
         )
