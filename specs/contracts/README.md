@@ -393,9 +393,9 @@ The per-OS `design.md` then only needs to cover:
 
 All 43 RHEL layer-3 feature areas have cross-OS contracts, plus 5
 UEFI-firmware-specific contracts, plus the Layer 1/2 foundations,
-plus the `python-environment-management` contract added in Phase 4
-(implemented once in the shared base rather than per OS).
-51 contracts total.
+plus `vpn-client-management` (shared abstract base) and
+`python-environment-management` (shared concrete base, added in
+Phase 4).  52 contracts total.
 
 ### Layer 1 — Infrastructure
 

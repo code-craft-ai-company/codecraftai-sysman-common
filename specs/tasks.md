@@ -32,6 +32,8 @@ contract updates that emerge as new per-OS implementations land.
 - [ ] Follow-up: once `BaseFeatureManager._dispatch` learns to
   surface `elevation_blocked`, drop the local `_dispatch_write` in
   the python-environment base in favour of the shared helper.
-- [ ] Follow-up: update `codecraftai-books` volume 04 (chapter 2
-  "The 50 Contracts" and `research/code-anchors.md`) for the 51st
-  contract and the concrete-base pattern.
+- [x] Update `codecraftai-books` volume 04 (README, chapters 1–4,
+  `research/code-anchors.md`) and the series index for the new
+  contract and the concrete-base pattern; reconciled the stale
+  contract total (52, not 50 — `vpn-client-management` had never
+  been counted) and the per-package file counts (2026-09-02).

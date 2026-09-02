@@ -68,5 +68,5 @@ items (`[ ]`) identify remaining work.
   `acl-management` / `user-group-management`), tracked as a contract extension
 - [ ] 33. Hash-checking mode (`--require-hashes`) and lock-file support as an
   extension
-- [ ] 34. Update `codecraftai-books` volume 04 for the 51st contract and the
-  concrete-base pattern
+- [x] 34. Update `codecraftai-books` volume 04 for the new contract and the
+  concrete-base pattern (2026-09-02)

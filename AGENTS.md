@@ -29,7 +29,7 @@ The `codecraftai-sysman-common` package is the shared foundation for the
 `codecraftai-sysman-*` system-management package family (RHEL, Ubuntu,
 macOS, Windows, UEFI). It hosts:
 
-- **Cross-OS feature contracts** under `specs/contracts/` — 51
+- **Cross-OS feature contracts** under `specs/contracts/` — 52
   markdown contracts that every per-OS sysman package implements.
 - **Shared base classes and helpers** under
   `source/packages/ccai/sysman/common/`:
