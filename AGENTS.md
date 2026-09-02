@@ -29,13 +29,23 @@ The `codecraftai-sysman-common` package is the shared foundation for the
 `codecraftai-sysman-*` system-management package family (RHEL, Ubuntu,
 macOS, Windows, UEFI). It hosts:
 
-- **Cross-OS feature contracts** under `specs/contracts/` — 50
+- **Cross-OS feature contracts** under `specs/contracts/` — 51
   markdown contracts that every per-OS sysman package implements.
 - **Shared base classes and helpers** under
-  `source/packages/ccai/sysman/common/` — currently the
-  `featurebase.py` module providing `BaseFeatureManager`,
-  `ActionStatus`, `FeatureConfig`, `FeatureActionResult`, and the
-  host-OS-dispatch helpers used by the UEFI tier.
+  `source/packages/ccai/sysman/common/`:
+  - `featurebase.py` — `BaseFeatureManager`, `ActionStatus`,
+    `FeatureConfig`, `FeatureActionResult`, and the host-OS-dispatch
+    helpers used by the UEFI tier.
+  - `commandredaction.py` — argv / text secret redaction (VPN tokens,
+    base64-staged PowerShell payloads, URL userinfo).
+  - `vpnclientmanagementbase.py` and its sibling model modules — the
+    abstract base for the vpn-client-management contract.
+  - `pythonenvironmentmanagementbase.py` and
+    `pythonenvironmentlayout.py` — the *concrete* shared
+    implementation of the python-environment-management contract
+    (venv + pip verbs, `deploy` from a `PythonEnvSpec`) plus the
+    POSIX / Windows layout strategies; per-OS packages subclass it
+    and add only a layout choice and an `ensure_prerequisites` verb.
 
 The package is consumed as a dependency by every per-OS sysman
 package; it has no runtime code beyond the shared base classes and no

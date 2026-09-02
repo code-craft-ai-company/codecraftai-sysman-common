@@ -10,3 +10,28 @@ and re-pointed every per-OS sysman package's pyproject.toml and
 Python imports at the new module. Ongoing tasks track changes to the
 shared base classes (e.g., new status values, new helpers) and
 contract updates that emerge as new per-OS implementations land.
+
+## Phase 4 — python-environment-management base (landed 2026-09-01)
+
+- [x] Author `specs/contracts/python-environment-management/contract.md`
+  and register it in the contracts README (Layer 3 table, count,
+  per-OS inventory, Convention 12 URL-userinfo channel).
+- [x] Add `ccai.sysman.common.pythonenvironmentlayout` with
+  `PythonEnvironmentLayout`, `PosixPythonEnvironmentLayout`,
+  `WindowsPythonEnvironmentLayout`.
+- [x] Add `ccai.sysman.common.pythonenvironmentmanagementbase` with
+  the concrete shared verbs, `PythonEnvManagerConfig`,
+  `PythonEnvActionResult`, `PythonEnvSpec`, `PythonEnvDeployResult`,
+  `PythonEnvInfo`, `PythonPackageInfo`, `PythonEnvQueryError`.
+- [x] Extend `commandredaction.redact_command` / `redact_text` with
+  URL-userinfo redaction (`redact_url_userinfo`).
+- [x] Author `specs/python-environment-management-base/` spec trio.
+- [x] testbase suite `test_pythonenvironmentmanagementbase.py` (54
+  tests) plus the legacy `unittest` mirror; URL-redaction tests in
+  both redaction suites.
+- [ ] Follow-up: once `BaseFeatureManager._dispatch` learns to
+  surface `elevation_blocked`, drop the local `_dispatch_write` in
+  the python-environment base in favour of the shared helper.
+- [ ] Follow-up: update `codecraftai-books` volume 04 (chapter 2
+  "The 50 Contracts" and `research/code-anchors.md`) for the 51st
+  contract and the concrete-base pattern.

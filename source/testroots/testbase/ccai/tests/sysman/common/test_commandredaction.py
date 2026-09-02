@@ -112,3 +112,52 @@ def test_none_command_stays_none() -> None:
     )
     assert result.command is None
     return
+
+
+# ----------------------------------------------------------------------
+# URL userinfo redaction (python-environment-management index URLs)
+# ----------------------------------------------------------------------
+
+
+def test_redact_url_userinfo_scrubs_bare_url() -> None:
+    from ccai.sysman.common.commandredaction import redact_url_userinfo
+    result = redact_url_userinfo(argument="https://svc:s3cret@pypi.example/simple")
+    assert result == "https://***@pypi.example/simple"
+    return
+
+
+def test_redact_url_userinfo_scrubs_equals_form() -> None:
+    from ccai.sysman.common.commandredaction import redact_url_userinfo
+    result = redact_url_userinfo(argument="--index-url=https://svc:s3cret@pypi.example/simple")
+    assert result == "--index-url=https://***@pypi.example/simple"
+    return
+
+
+def test_redact_url_userinfo_leaves_credential_free_url() -> None:
+    from ccai.sysman.common.commandredaction import redact_url_userinfo
+    result = redact_url_userinfo(argument="https://pypi.org/simple")
+    assert result == "https://pypi.org/simple"
+    return
+
+
+def test_redact_command_scrubs_index_url_credentials() -> None:
+    command = [
+        "python", "-m", "pip", "install",
+        "--index-url", "https://svc:s3cret@pypi.example/simple",
+        "--extra-index-url=https://a:b@extra.example/simple",
+        "rich",
+    ]
+    result = redact_command(command=command)
+    assert result == [
+        "python", "-m", "pip", "install",
+        "--index-url", "https://***@pypi.example/simple",
+        "--extra-index-url=https://***@extra.example/simple",
+        "rich",
+    ]
+    return
+
+
+def test_redact_text_scrubs_index_url_credentials() -> None:
+    result = redact_text(text="pip failed for https://svc:s3cret@pypi.example/simple today")
+    assert result == "pip failed for https://***@pypi.example/simple today"
+    return

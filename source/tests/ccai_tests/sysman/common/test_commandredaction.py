@@ -197,3 +197,51 @@ class TestRedactBase64StagedContent(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRedactUrlUserinfo(unittest.TestCase):
+    """
+        URL userinfo redaction for python-environment-management index
+        URLs.
+    """
+
+    def test_redact_url_userinfo_scrubs_bare_url(self) -> None:
+        from ccai.sysman.common.commandredaction import redact_url_userinfo
+        result = redact_url_userinfo(argument="https://svc:s3cret@pypi.example/simple")
+        self.assertEqual(result, "https://***@pypi.example/simple")
+        return
+
+    def test_redact_url_userinfo_scrubs_equals_form(self) -> None:
+        from ccai.sysman.common.commandredaction import redact_url_userinfo
+        result = redact_url_userinfo(argument="--index-url=https://svc:s3cret@pypi.example/simple")
+        self.assertEqual(result, "--index-url=https://***@pypi.example/simple")
+        return
+
+    def test_redact_url_userinfo_leaves_credential_free_url(self) -> None:
+        from ccai.sysman.common.commandredaction import redact_url_userinfo
+        result = redact_url_userinfo(argument="https://pypi.org/simple")
+        self.assertEqual(result, "https://pypi.org/simple")
+        return
+
+    def test_redact_command_scrubs_index_url_credentials(self) -> None:
+        from ccai.sysman.common.commandredaction import redact_command
+        command = [
+            "python", "-m", "pip", "install",
+            "--index-url", "https://svc:s3cret@pypi.example/simple",
+            "--extra-index-url=https://a:b@extra.example/simple",
+            "rich",
+        ]
+        result = redact_command(command=command)
+        self.assertEqual(result, [
+            "python", "-m", "pip", "install",
+            "--index-url", "https://***@pypi.example/simple",
+            "--extra-index-url=https://***@extra.example/simple",
+            "rich",
+        ])
+        return
+
+    def test_redact_text_scrubs_index_url_credentials(self) -> None:
+        from ccai.sysman.common.commandredaction import redact_text
+        result = redact_text(text="pip failed for https://svc:s3cret@pypi.example/simple today")
+        self.assertEqual(result, "pip failed for https://***@pypi.example/simple today")
+        return

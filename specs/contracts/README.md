@@ -321,6 +321,13 @@ delivery to the runner is, in order of preference:
    recorded `command` field via a `_sanitise_argv_passwords` helper
    that replaces the password value with `<redacted>`.
 
+4. **URL userinfo (argv, redacted)** (`python-environment-management`
+   pip index URLs): the credential is embedded in a URL on argv
+   because the tool offers no other channel short of a keyring
+   file. `redact_command` scrubs the `user:password@` portion of
+   any URL-shaped token, so recorded `command` fields never carry
+   it.
+
 Contracts that take credentials SHOULD note which delivery channel
 each per-OS implementation uses. New features that take credentials
 MUST follow the preference order; if the preferred channel is not
@@ -385,8 +392,10 @@ The per-OS `design.md` then only needs to cover:
 ## Current contracts
 
 All 43 RHEL layer-3 feature areas have cross-OS contracts, plus 5
-UEFI-firmware-specific contracts, plus the Layer 1/2 foundations.
-50 contracts total.
+UEFI-firmware-specific contracts, plus the Layer 1/2 foundations,
+plus the `python-environment-management` contract added in Phase 4
+(implemented once in the shared base rather than per OS).
+51 contracts total.
 
 ### Layer 1 — Infrastructure
 
@@ -437,6 +446,7 @@ UEFI-firmware-specific contracts, plus the Layer 1/2 foundations.
 | package-management | [`package-management/contract.md`](package-management/contract.md) | none | — |
 | precision-time-management | [`precision-time-management/contract.md`](precision-time-management/contract.md) | none | chrony / ntpd / w32tm |
 | process-management | [`process-management/contract.md`](process-management/contract.md) | PID or process name | — |
+| python-environment-management | [`python-environment-management/contract.md`](python-environment-management/contract.md) | environment path | Verbs implemented once in the `codecraftai-sysman-common` base; per-OS packages add layout + prerequisites |
 | remote-log-forwarding | [`remote-log-forwarding/contract.md`](remote-log-forwarding/contract.md) | forwarding destination | macOS cannot support `TLS` transport natively |
 | repository-management | [`repository-management/contract.md`](repository-management/contract.md) | repository name | — |
 | resource-control-management | [`resource-control-management/contract.md`](resource-control-management/contract.md) | resource-control group name | cgroups / launchd limits / Job Objects |
@@ -493,6 +503,7 @@ as patterns):
 | log-management | ✓ | ✓ | ✓ | — |
 | network-configuration | ✓ | ✓ | ✓ | — |
 | package-management | ✓ | ✓ | ✓ | — |
+| python-environment-management | ✓ | ✓ | ✓ | — |
 | repository-management | ✓ | ✓ | ✓ | — |
 | scheduled-tasks | ✓ | ✓ | ✓ | — |
 | security-compliance | ✓ | ✓ | ✓ | — |
@@ -503,6 +514,11 @@ as patterns):
 | efi-variables | — | — | — | ✓ |
 | esp-management | — | — | — | ✓ |
 | secure-boot | — | — | — | ✓ |
+
+`python-environment-management` also has a RHEL spec set
+(`codecraftai-sysman-linux-redhat/specs/3-python-environment-management/`)
+and a shared-base spec set in this package
+(`specs/python-environment-management-base/`).
 
 All other contracts (the 30 drafted during Phase 3a/3b) do not have
 per-OS specs yet. They will be written alongside the implementation
