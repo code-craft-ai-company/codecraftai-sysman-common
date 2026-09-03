@@ -57,5 +57,5 @@ jobs:
         run: |
           source ./.venv/bin/activate
           python3 -m unittest discover -s ./source/tests -p "test_*.py"
-          testbase testing run --root ./source/testroots/testbase --includes=ccai.tests
+          testbase testing run --root ./source/testroots/testbase --includes=testbase.ccai.tests
           deactivate
