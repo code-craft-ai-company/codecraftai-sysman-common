@@ -28,6 +28,47 @@ from ccai.sysman.common.vpnclientmanagementbase import (
 
 
 
+class _MockRunner:
+    """
+        Minimal ``ICommandRunner`` for unit tests. Records every call,
+        returns a configurable :class:`RunResult` per call.
+    """
+
+    def __init__(self, *, queued: Optional[List[RunResult]] = None) -> None:
+        if queued is None:
+            self.queued: List[RunResult] = []
+        else:
+            self.queued = list(queued)
+        self.calls: List[Dict[str, object]] = []
+        return
+
+    def run(
+        self,
+        args: List[str],
+        *,
+        elevated: bool = False,
+        cwd: Optional[str] = None,
+        env: Optional[Dict[str, str]] = None,
+        stdin: Optional[str] = None,
+        timeout: Optional[float] = None,
+        on_output: Optional[Callable[[str], None]] = None,
+        on_error: Optional[Callable[[str], None]] = None,
+        capture_output: bool = True,
+    ) -> RunResult:
+        call_record = {
+            "args": list(args),
+            "elevated": elevated,
+            "stdin": stdin,
+        }
+        self.calls.append(call_record)
+
+        if len(self.queued) > 0:
+            rtnval = self.queued.pop(0)
+        else:
+            rtnval = RunResult(exit_code=0, stdout="", stderr="")
+        return rtnval
+
+
 class _FakeVPNClientManager(VPNClientManagementBase):
     """
         Minimal concrete subclass used to exercise the abstract verb
