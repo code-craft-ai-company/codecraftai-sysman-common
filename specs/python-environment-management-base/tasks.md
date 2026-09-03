@@ -60,9 +60,13 @@ items (`[ ]`) identify remaining work.
 
 ## Gaps and Follow-ups
 
-- [ ] 30. Property-based tests (hypothesis via `ccai.testbase.properties`) for the
-  requirement probe and the deploy aggregate, once the property-test harness is
-  green-verified in a rehomed environment
+- [x] 30. Property-based tests (`ccai.testbase.properties`) for the requirement
+  probe and the deploy aggregate (2026-09-02): eight `@given` properties covering
+  bare-name presence, exact pins, ordering operators, PEP 503 name normalisation,
+  non-numeric versions deferring to pip, URL/editable/path forms never satisfying,
+  group-wide skip, and the FAILED > SUCCESS > SKIPPED aggregate. The unittest
+  mirror's auto-binder now drives `_property_`-tagged functions through
+  `run_property`, so both runners exercise the generators
 - [x] 31. Route `_dispatch_write` through `BaseFeatureManager._dispatch`; the
   shared helper now surfaces `elevation_blocked` (2026-09-02)
 - [x] 32. Ownership hand-over after an elevated create (2026-09-02): `set_owner` /

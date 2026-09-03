@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from typing import Callable, List, Optional
 
 from ccai import testbase
+from ccai.testbase.properties import given
+from ccai.testbase.properties import strategies as st
 
 from ccai.interfaces.icommandrunner import RunResult
 
@@ -1430,4 +1432,201 @@ def test_deploy_stops_before_chown_when_an_install_fails():
     testbase.assert_equal(result.status, PythonEnvActionStatus.FAILED)
     for call in runner.calls:
         testbase.assert_true(call["args"][:1] != ["chown"])
+    return
+
+
+# ----------------------------------------------------------------------
+# Property tests
+#
+# The requirement probe is the subtlest logic in this module: it decides
+# whether an install can be skipped, using only the standard library.  Its
+# safety rests on an asymmetry -- a false "not satisfied" costs one redundant
+# pip call, a false "satisfied" silently omits a dependency -- so these
+# properties lean on that direction rather than on exact equivalence with a
+# real resolver.
+# ----------------------------------------------------------------------
+
+
+_NAME_ALPHABET = "abcdefghijklmnopqrstuvwxyz"
+_name_st = st.text(alphabet=_NAME_ALPHABET, min_size=1, max_size=8)
+
+
+def _version(*parts: int) -> str:
+    rtnval = ".".join(str(p) for p in parts)
+    return rtnval
+
+
+@given(name=_name_st, major=st.integers(min_value=0, max_value=40),
+       minor=st.integers(min_value=0, max_value=40),
+       constraints={"max_examples": 40})
+def test_property_bare_name_is_satisfied_exactly_when_installed(
+    name: str, major: int, minor: int
+) -> None:
+    """
+        A requirement with no version clause is satisfied iff the
+        distribution is present, whatever version it happens to be.
+    """
+    version = _version(major, minor)
+    testbase.assert_equal(_satisfied(name, [(name, version)]), True)
+    testbase.assert_equal(_satisfied(name, []), False)
+    testbase.assert_equal(_satisfied(name, [("other-" + name, version)]), False)
+    return
+
+
+@given(name=_name_st, major=st.integers(min_value=0, max_value=40),
+       minor=st.integers(min_value=0, max_value=40),
+       other=st.integers(min_value=0, max_value=40),
+       constraints={"max_examples": 40})
+def test_property_exact_pin_matches_only_that_version(
+    name: str, major: int, minor: int, other: int
+) -> None:
+    """
+        ``name==V`` is satisfied iff the installed version string is V.
+    """
+    wanted = _version(major, minor)
+    testbase.assert_equal(_satisfied("{}=={}".format(name, wanted),
+                                     [(name, wanted)]), True)
+    if other != minor:
+        installed = _version(major, other)
+        testbase.assert_equal(_satisfied("{}=={}".format(name, wanted),
+                                         [(name, installed)]), False)
+    return
+
+
+@given(name=_name_st, low=st.integers(min_value=0, max_value=30),
+       bump=st.integers(min_value=1, max_value=20),
+       constraints={"max_examples": 40})
+def test_property_ordering_clauses_agree_with_numeric_comparison(
+    name: str, low: int, bump: int
+) -> None:
+    """
+        For purely numeric versions the ordering operators agree with the
+        obvious comparison, and the strict/non-strict pair is consistent.
+    """
+    high = low + bump
+    lo, hi = _version(1, low), _version(1, high)
+
+    testbase.assert_equal(_satisfied("{}>={}".format(name, lo), [(name, hi)]), True)
+    testbase.assert_equal(_satisfied("{}>{}".format(name, lo), [(name, hi)]), True)
+    testbase.assert_equal(_satisfied("{}<{}".format(name, lo), [(name, hi)]), False)
+    testbase.assert_equal(_satisfied("{}<={}".format(name, hi), [(name, lo)]), True)
+    # An equal version satisfies the non-strict form and not the strict one.
+    testbase.assert_equal(_satisfied("{}>={}".format(name, hi), [(name, hi)]), True)
+    testbase.assert_equal(_satisfied("{}>{}".format(name, hi), [(name, hi)]), False)
+    return
+
+
+@given(name=_name_st, major=st.integers(min_value=0, max_value=40),
+       minor=st.integers(min_value=0, max_value=40),
+       constraints={"max_examples": 40})
+def test_property_name_comparison_is_pep503_insensitive(
+    name: str, major: int, minor: int
+) -> None:
+    """
+        Separator and case variants of one name are the same distribution,
+        so the probe's answer must not depend on which spelling is used.
+    """
+    version = _version(major, minor)
+    installed = [(name.replace("-", "_"), version)]
+    for spelling in (name, name.upper(), name.replace("-", "."),
+                     name.replace("-", "_")):
+        testbase.assert_equal(_satisfied(spelling, installed), True, spelling)
+    return
+
+
+@given(name=_name_st, major=st.integers(min_value=0, max_value=40),
+       suffix=st.sampled_from(["rc1", "b2", "a1", ".dev0", "+local"]),
+       constraints={"max_examples": 40})
+def test_property_non_numeric_versions_defer_to_pip(
+    name: str, major: int, suffix: str
+) -> None:
+    """
+        Pre-release, dev and local versions are outside what the probe can
+        reason about, so an ordering clause against one is never reported as
+        satisfied -- pip is left to decide.
+    """
+    installed = [(name, "{}.0{}".format(major, suffix))]
+    for clause in (">=", ">", "<=", "<", "~="):
+        spec = "{}{}{}".format(name, clause, _version(major, 0))
+        testbase.assert_equal(_satisfied(spec, installed), False, spec)
+    return
+
+
+@given(name=_name_st, major=st.integers(min_value=0, max_value=40),
+       form=st.sampled_from(["{n} @ https://x/{n}.whl", "-e ./{n}",
+                             "./dist/{n}.whl", "/abs/{n}.whl"]),
+       constraints={"max_examples": 40})
+def test_property_url_and_path_requirements_never_satisfy(
+    name: str, major: int, form: str
+) -> None:
+    """
+        URL, editable and path requirements carry no version the probe can
+        compare, so they are never skipped even when a same-named
+        distribution is installed.
+    """
+    spec = form.format(n=name)
+    testbase.assert_equal(_satisfied(spec, [(name, _version(major, 0))]), False, spec)
+    return
+
+
+@given(names=st.lists(_name_st, min_size=2, max_size=5),
+       constraints={"max_examples": 30})
+def test_property_a_group_is_satisfied_only_when_every_member_is(
+    names: list
+) -> None:
+    """
+        install_packages skips only when EVERY specifier is satisfied, so
+        one missing member is enough to force a dispatch.
+    """
+    unique = sorted(set(names))
+    installed = [(n, "1.0") for n in unique]
+    runner = _MockCommandRunner()
+    _seed_installed(runner, installed)
+    manager = _make_manager(runner)
+    testbase.assert_equal(manager.install_packages(path=_VENV, packages=unique).status,
+                          PythonEnvActionStatus.SKIPPED)
+
+    runner2 = _MockCommandRunner()
+    _seed_installed(runner2, installed[:-1])
+    manager2 = _make_manager(runner2)
+    testbase.assert_equal(manager2.install_packages(path=_VENV, packages=unique).status,
+                          PythonEnvActionStatus.SUCCESS)
+    return
+
+
+@given(statuses=st.lists(
+           st.sampled_from(["success", "skipped", "failed"]),
+           min_size=1, max_size=5),
+       constraints={"max_examples": 40})
+def test_property_deploy_aggregate_follows_its_precedence(
+    statuses: list
+) -> None:
+    """
+        The aggregate is FAILED if any step failed, else SUCCESS if any
+        succeeded, else SKIPPED -- computed here from step results directly,
+        so the rule is checked independently of how deploy sequences them.
+    """
+    lookup = {
+        "success": PythonEnvActionStatus.SUCCESS,
+        "skipped": PythonEnvActionStatus.SKIPPED,
+        "failed": PythonEnvActionStatus.FAILED,
+    }
+    manager = _make_manager(_MockCommandRunner())
+    steps = []
+    for token in statuses:
+        steps.append(PythonEnvActionResult(status=lookup[token], path=_VENV))
+        # deploy stops at the first failure, so mirror that when folding.
+        if token == "failed":
+            break
+
+    result = manager._build_deploy_result(spec=PythonEnvSpec(path=_VENV), steps=steps)
+    kept = [s.status for s in steps]
+
+    if PythonEnvActionStatus.FAILED in kept:
+        expected = PythonEnvActionStatus.FAILED
+    elif PythonEnvActionStatus.SUCCESS in kept:
+        expected = PythonEnvActionStatus.SUCCESS
+    else:
+        expected = PythonEnvActionStatus.SKIPPED
+    testbase.assert_equal(result.status, expected)
     return
