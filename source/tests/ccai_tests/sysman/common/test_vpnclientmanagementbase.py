@@ -4,11 +4,11 @@
 """
 
 import dataclasses
-import random
 import unittest
 
 from typing import Callable, Dict, List, Optional
 
+from ccai.testbase.properties import run_property
 from ccai.testbase.properties import strategies as st
 
 from ccai.aspects.aspects import Aspects
@@ -26,60 +26,6 @@ from ccai.sysman.common.vpnclientmanagementbase import (
     VPNProvider,
 )
 
-
-
-def _run_property(test: unittest.TestCase, check, max_examples: int, **strategies) -> None:
-    """
-        Runs ``check`` against ``max_examples`` generated inputs. ``@given`` from ccai.testbase only marks a
-        test for the testbase sequencer's property runner; under plain unittest the examples have to be drawn
-        here, from a fixed seed so a failure reproduces.
-    """
-    rng = random.Random(0x5EED)
-    for index in range(max_examples):
-        kwargs = {name: strategy.generate(rng) for name, strategy in strategies.items()}
-        with test.subTest(example=index, **{name: repr(value)[:48] for name, value in kwargs.items()}):
-            check(**kwargs)
-    return
-
-class _MockRunner:
-    """
-        Minimal ``ICommandRunner`` for unit tests. Records every call,
-        returns a configurable :class:`RunResult` per call.
-    """
-
-    def __init__(self, *, queued: Optional[List[RunResult]] = None) -> None:
-        if queued is None:
-            self.queued: List[RunResult] = []
-        else:
-            self.queued = list(queued)
-        self.calls: List[Dict[str, object]] = []
-        return
-
-    def run(
-        self,
-        args: List[str],
-        *,
-        elevated: bool = False,
-        cwd: Optional[str] = None,
-        env: Optional[Dict[str, str]] = None,
-        stdin: Optional[str] = None,
-        timeout: Optional[float] = None,
-        on_output: Optional[Callable[[str], None]] = None,
-        on_error: Optional[Callable[[str], None]] = None,
-        capture_output: bool = True,
-    ) -> RunResult:
-        call_record = {
-            "args": list(args),
-            "elevated": elevated,
-            "stdin": stdin,
-        }
-        self.calls.append(call_record)
-
-        if len(self.queued) > 0:
-            rtnval = self.queued.pop(0)
-        else:
-            rtnval = RunResult(exit_code=0, stdout="", stderr="")
-        return rtnval
 
 
 class _FakeVPNClientManager(VPNClientManagementBase):
@@ -601,7 +547,7 @@ class IdempotencyPropertyTests(unittest.TestCase):
     """
 
     def test_property_install_is_idempotent(self) -> None:
-        _run_property(self, self._test_property_install_is_idempotent, 100, version=st.one_of(st.none(), st.text(min_size=1, max_size=8)), channel=st.sampled_from(["stable", "unstable", "beta"]))
+        run_property(self._test_property_install_is_idempotent, 100, case=self, version=st.one_of(st.none(), st.text(min_size=1, max_size=8)), channel=st.sampled_from(["stable", "unstable", "beta"]))
         return
 
     def _test_property_install_is_idempotent(self, version: Optional[str], channel: str) -> None:
@@ -618,7 +564,7 @@ class IdempotencyPropertyTests(unittest.TestCase):
         return
 
     def test_property_uninstall_is_idempotent(self) -> None:
-        _run_property(self, self._test_property_uninstall_is_idempotent, 25, purge=st.booleans())
+        run_property(self._test_property_uninstall_is_idempotent, 25, case=self, purge=st.booleans())
         return
 
     def _test_property_uninstall_is_idempotent(self, purge: bool) -> None:
@@ -638,7 +584,7 @@ class IdempotencyPropertyTests(unittest.TestCase):
         return
 
     def test_property_bring_up_idempotent_on_matching_state(self) -> None:
-        _run_property(self, self._test_property_bring_up_idempotent_on_matching_state, 10, authkey=st.text(min_size=1, max_size=16), hostname=st.one_of(st.none(), st.text(min_size=1, max_size=8)))
+        run_property(self._test_property_bring_up_idempotent_on_matching_state, 10, case=self, authkey=st.text(min_size=1, max_size=16), hostname=st.one_of(st.none(), st.text(min_size=1, max_size=8)))
         return
 
     def _test_property_bring_up_idempotent_on_matching_state(self, authkey: str, hostname: Optional[str]) -> None:
@@ -686,7 +632,7 @@ class DryRunPropertyTests(unittest.TestCase):
     """
 
     def test_property_dry_run_never_invokes_runner(self) -> None:
-        _run_property(self, self._test_property_dry_run_never_invokes_runner, 20, version=st.one_of(st.none(), st.text(min_size=1, max_size=8)), channel=st.sampled_from(["stable", "unstable"]))
+        run_property(self._test_property_dry_run_never_invokes_runner, 20, case=self, version=st.one_of(st.none(), st.text(min_size=1, max_size=8)), channel=st.sampled_from(["stable", "unstable"]))
         return
 
     def _test_property_dry_run_never_invokes_runner(self, version: Optional[str], channel: str) -> None:
@@ -708,7 +654,7 @@ class ElevationPropertyTests(unittest.TestCase):
     """
 
     def test_property_elevation_truth_table(self) -> None:
-        _run_property(self, self._test_property_elevation_truth_table, 25, elevated=st.booleans(), kind=st.sampled_from([VERB_KIND_READ, VERB_KIND_WRITE]))
+        run_property(self._test_property_elevation_truth_table, 25, case=self, elevated=st.booleans(), kind=st.sampled_from([VERB_KIND_READ, VERB_KIND_WRITE]))
         return
 
     def _test_property_elevation_truth_table(self, elevated: bool, kind: str) -> None:

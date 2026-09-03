@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "codecraftai-sysman-common"
 description = "Code Craft AI - System Management Common Foundation"
-version = "1.0.1"
+version = "1.0.2"
 authors = ["Myron Walker <myron.walker@gmail.com>"]
 readme = "README.rst"
 license = "LicenseRef-CodeCraftAI-Dual-License"
@@ -27,6 +27,15 @@ codecraftai-testbase = { version = "<2.0.0", source = "codecraftai" }
 name = "codecraftai"
 url = "https://code-craft.ai/licensed-repository/simple/"
 priority = "supplemental"
+
+[tool.ruff.lint]
+# Deliberately narrow.  This gate exists for one reason: a bare `except:`
+# swallows ConfigurationError and SemanticError, which derive from
+# BaseException precisely so that they pass through ordinary handlers and end
+# the run.  Catching them hides the original cause behind whatever error
+# happens next.  See userguide/10-00-coding-standards.rst, exception-handling
+# rules 5-7.  Use `except Exception:` when you mean "any ordinary failure".
+select = ["E722"]
 
 [build-system]
 requires = ["poetry-core"]
