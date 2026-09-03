@@ -3,6 +3,8 @@
     automatic redaction performed by :class:`VPNActionResult`.
 """
 
+import base64
+
 from ccai.sysman.common.commandredaction import (
     REDACTED_PLACEHOLDER,
     redact_command,
@@ -160,4 +162,66 @@ def test_redact_command_scrubs_index_url_credentials() -> None:
 def test_redact_text_scrubs_index_url_credentials() -> None:
     result = redact_text(text="pip failed for https://svc:s3cret@pypi.example/simple today")
     assert result == "pip failed for https://***@pypi.example/simple today"
+    return
+
+
+# ----------------------------------------------------------------------
+# Windows base64-staged secret redaction
+#
+# The Windows vpn-client-management renderer stages secret file content by
+# base64-encoding it into a PowerShell ``FromBase64String('<payload>')``
+# scriptblock.  base64 is trivially reversible, so the encoded payload is a
+# secret and must be scrubbed from any recorded command.
+# ----------------------------------------------------------------------
+
+
+def _staged_command(secret: str) -> list:
+    """
+        Build the PowerShell argv that stages ``secret`` via base64.
+    """
+    encoded = base64.b64encode(secret.encode("utf-8")).decode("ascii")
+    script = (
+        "$content = [System.Text.Encoding]::UTF8.GetString("
+        "[System.Convert]::FromBase64String('{}')); "
+        "[System.IO.File]::WriteAllText('C:\\Temp\\authkey', $content, "
+        "(New-Object System.Text.UTF8Encoding $false))"
+    ).format(encoded)
+    rtnval = ["powershell.exe", "-NoProfile", "-Command", script]
+    return rtnval
+
+
+def test_redact_command_scrubs_base64_staged_secret() -> None:
+    secret = "tskey-auth-SUPERSECRET123456"
+    encoded = base64.b64encode(secret.encode("utf-8")).decode("ascii")
+    redacted = redact_command(command=_staged_command(secret))
+    joined = " ".join(redacted)
+    assert secret not in joined
+    assert encoded not in joined
+    assert "FromBase64String('***')" in joined
+    return
+
+
+def test_vpnactionresult_scrubs_base64_staged_secret() -> None:
+    secret = "twingate-setup-token-ABCDEF"
+    encoded = base64.b64encode(secret.encode("utf-8")).decode("ascii")
+    result = VPNActionResult(
+        status=VPNActionStatus.SUCCESS,
+        provider=VPNProvider.TWINGATE,
+        detail="stage_config",
+        exit_code=0,
+        stdout=None,
+        stderr=None,
+        command=_staged_command(secret),
+    )
+    joined = " ".join(result.command)
+    assert secret not in joined
+    assert encoded not in joined
+    assert "FromBase64String('***')" in joined
+    return
+
+
+def test_non_base64_command_untouched() -> None:
+    command = ["powershell.exe", "-Command", "Get-Service -Name tailscale"]
+    redacted = redact_command(command=command)
+    assert redacted == command
     return

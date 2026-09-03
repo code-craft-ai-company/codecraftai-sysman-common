@@ -195,9 +195,6 @@ class TestRedactBase64StagedContent(unittest.TestCase):
         return
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class TestRedactUrlUserinfo(unittest.TestCase):
     """
@@ -245,3 +242,6 @@ class TestRedactUrlUserinfo(unittest.TestCase):
         result = redact_text(text="pip failed for https://svc:s3cret@pypi.example/simple today")
         self.assertEqual(result, "pip failed for https://***@pypi.example/simple today")
         return
+
+if __name__ == "__main__":
+    unittest.main()
