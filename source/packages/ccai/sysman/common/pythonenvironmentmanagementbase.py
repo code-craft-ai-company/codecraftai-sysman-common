@@ -105,6 +105,14 @@ _MESSAGE_ENV_ALREADY_EXISTS = "environment already exists"
 _MESSAGE_ENV_NOT_FOUND = "environment does not exist"
 _MESSAGE_PACKAGES_SATISFIED = "every requested package is already installed"
 _MESSAGE_PACKAGES_NOT_INSTALLED = "none of the requested packages are installed"
+_MESSAGE_OWNER_ALREADY_SET = "environment is already owned by the requested owner"
+
+# ``user`` or ``user:group``.  The value reaches the runner as its own argv
+# token, never a shell word, so this is a fail-fast readability guard rather
+# than an injection defence.
+_OWNER_PATTERN = re.compile(
+    r"\A[A-Za-z_][A-Za-z0-9_.\\-]*\$?(:[A-Za-z_][A-Za-z0-9_.\\-]*\$?)?\Z"
+)
 _MESSAGE_PIP_UPGRADE_FAILED = "environment created but the pip upgrade failed"
 
 
@@ -232,6 +240,10 @@ class PythonEnvSpec:
                                  already-installed probe is skipped.
         :param recreate: When True, an existing environment at ``path``
                          is removed before creation.
+        :param owner: When set, the finished tree is handed to this owner
+                      (``user`` or ``user:group`` on POSIX; a bare account
+                      name on Windows).  Applied last, after every install,
+                      so files pip created are re-owned too.
     """
     path: str
     packages: List[str] = field(default_factory=list)
@@ -242,6 +254,7 @@ class PythonEnvSpec:
     upgrade_pip: Optional[bool] = None
     upgrade_packages: bool = False
     recreate: bool = False
+    owner: Optional[str] = None
 
 
 @dataclass
@@ -657,6 +670,81 @@ class PythonEnvironmentManagementBase(BaseFeatureManager, ABC):
         rtnval = self._dispatch_write(command=command, path=path, packages=[_PIP_MODULE])
         return rtnval
 
+    def set_owner(self, path: str, owner: str) -> PythonEnvActionResult:
+        """
+            Hand the environment tree to ``owner``.
+
+            Creating an environment with ``config.elevated`` produces a
+            root- or Administrator-owned tree, which the service account that
+            runs the application usually cannot write to.  This verb re-owns
+            it recursively, and is the last step of :meth:`deploy` so that
+            files pip created are covered too.
+
+            Skipped when the environment root already reports ``owner``.  The
+            probe reads only the root, not the whole tree: a partially-owned
+            tree is the outcome of an interrupted ``chown``, and re-running
+            the command is the cheapest way to converge it.
+
+            :param path: The environment root.
+            :param owner: ``user`` or ``user:group`` on POSIX; a bare account
+                          name on Windows, where there is no group half.
+
+            :returns: The :class:`PythonEnvActionResult`.
+
+            :raises ValueError: When ``owner`` is empty or not of the form
+                                ``user[:group]``.
+        """
+        self._require_owner(owner=owner)
+        command = self._layout.build_set_owner_argv(path=path, owner=owner)
+
+        if self._config.dry_run:
+            dry_result = self._build_result(
+                status=PythonEnvActionStatus.DRY_RUN,
+                path=path,
+                command=command,
+            )
+            return dry_result
+
+        current = self.get_owner(path=path)
+        if current is not None:
+            wanted = self._layout.normalise_owner(owner)
+            if current == wanted:
+                skipped = self._build_result(
+                    status=PythonEnvActionStatus.SKIPPED,
+                    path=path,
+                    command=command,
+                    message=_MESSAGE_OWNER_ALREADY_SET,
+                )
+                return skipped
+
+        rtnval = self._dispatch_write(command=command, path=path)
+        return rtnval
+
+    def get_owner(self, path: str) -> Optional[str]:
+        """
+            Read the current owner of the environment root, normalised for
+            comparison by the layout.
+
+            :param path: The environment root.
+
+            :returns: The normalised owner, or ``None`` when the probe fails
+                      (the path is absent, or the platform tool is missing).
+        """
+        command = self._layout.build_query_owner_argv(path=path)
+        run_result = self._runner.run(list(command), elevated=False)
+
+        if run_result.exit_code != 0:
+            rtnval: Optional[str] = None
+            return rtnval
+
+        stripped = run_result.stdout.strip()
+        if len(stripped) == 0:
+            rtnval = None
+            return rtnval
+
+        rtnval = self._layout.normalise_owner(stripped)
+        return rtnval
+
     def deploy(self, spec: PythonEnvSpec) -> PythonEnvDeployResult:
         """
             Converge an environment onto a :class:`PythonEnvSpec`.
@@ -672,6 +760,8 @@ class PythonEnvironmentManagementBase(BaseFeatureManager, ABC):
                 4. ``install_requirements`` when the spec lists any
                    requirements files.
                 5. ``install_packages`` when the spec lists any packages.
+                6. ``set_owner`` when the spec names an owner.  Last, so
+                   that everything pip wrote is re-owned as well.
 
             :param spec: The environment declaration.
 
@@ -733,6 +823,13 @@ class PythonEnvironmentManagementBase(BaseFeatureManager, ABC):
                 upgrade=spec.upgrade_packages,
             )
             steps.append(packages_result)
+            if packages_result.status == PythonEnvActionStatus.FAILED:
+                rtnval = self._build_deploy_result(spec=spec, steps=steps)
+                return rtnval
+
+        if spec.owner is not None:
+            owner_result = self.set_owner(path=spec.path, owner=spec.owner)
+            steps.append(owner_result)
 
         rtnval = self._build_deploy_result(spec=spec, steps=steps)
         return rtnval
@@ -1415,6 +1512,31 @@ class PythonEnvironmentManagementBase(BaseFeatureManager, ABC):
         """
         rtnval = re.sub(r"[-_.]+", "-", name).lower()
         return rtnval
+
+    def _require_owner(self, *, owner: str) -> None:
+        """
+            Reject an owner that is empty or not of the form ``user[:group]``.
+
+            :param owner: The caller-supplied owner.
+
+            :raises ValueError: When the value is unusable.
+        """
+        if owner is None or not isinstance(owner, str) or len(owner) == 0:
+            raise ValueError("'owner' must be a non-empty string.")
+
+        if _OWNER_PATTERN.match(owner) is None:
+            err_msg = (
+                "'owner' must be 'user' or 'user:group', got {!r}.".format(owner)
+            )
+            raise ValueError(err_msg)
+
+        if ":" in owner and not self._layout.supports_owner_group:
+            err_msg = (
+                "This platform has no paired owner group; supply a bare "
+                "account name instead of {!r}.".format(owner)
+            )
+            raise ValueError(err_msg)
+        return
 
     def _require_non_empty(self, *, items: List[str], name: str) -> None:
         """

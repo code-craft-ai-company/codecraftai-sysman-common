@@ -65,6 +65,7 @@ their argv shape.
 | `install_requirements` | `(path: str, requirements_files: list[str], *, constraints_files: list[str] \| None, upgrade: bool) → PythonEnvActionResult` | Write |
 | `uninstall_packages` | `(path: str, names: list[str]) → PythonEnvActionResult` | Write |
 | `upgrade_pip` | `(path: str) → PythonEnvActionResult` | Write |
+| `set_owner` | `(path: str, owner: str) → PythonEnvActionResult` | Write |
 | `deploy` | `(spec: PythonEnvSpec) → PythonEnvDeployResult` | Write (composite) |
 | `ensure_prerequisites` | `(packages: list[str] \| None) → list[<Os>PackageActionResult]` | Write (per-OS) |
 | `environment_exists` | `(path: str) → bool` | Read |
@@ -75,6 +76,7 @@ their argv shape.
 | `is_package_installed` | `(path: str, name: str) → bool` | Read |
 | `freeze` | `(path: str) → list[str]` | Read |
 | `get_environment_info` | `(path: str) → PythonEnvInfo \| None` | Read |
+| `get_owner` | `(path: str) → str \| None` | Read |
 
 ### Method-level invariants (writes)
 
@@ -87,6 +89,9 @@ their argv shape.
    MUST return `SKIPPED` when none of the names are installed.
 2. **Never-skip verbs.** `install_requirements` and `upgrade_pip` are
    operational and MUST NOT skip; pip is itself idempotent for both.
+   `set_owner` MUST return `SKIPPED` when the environment root already
+   reports the requested owner, and MUST dispatch when the probe cannot
+   answer — an unreadable owner is never treated as "already correct".
 3. **Dry-run short-circuit.** `dry_run=True` MUST return `DRY_RUN`
    with `command` populated and MUST NOT invoke the runner — not
    even for the idempotency probe.
@@ -110,7 +115,15 @@ their argv shape.
    `install_packages`; and MUST stop at the first `FAILED` step. The
    aggregate `status` is `FAILED` if any step failed, `DRY_RUN` under
    dry-run, `SUCCESS` if any step succeeded, else `SKIPPED`.
-9. **Prerequisite delegation.** `ensure_prerequisites` MUST delegate
+9. **Ownership hand-over.** Creating an environment with `elevated=True`
+   produces a root- or Administrator-owned tree that the service account
+   running the application usually cannot write to. `set_owner` re-owns it
+   recursively and MUST be the final step of `deploy`, after every install,
+   so that files pip created are covered. It MUST raise `ValueError` for an
+   owner that is empty or not of the form `user[:group]`, and for a
+   `user:group` value on a platform whose layout reports
+   `supports_owner_group == False`.
+10. **Prerequisite delegation.** `ensure_prerequisites` MUST delegate
    to the OS's existing `package-management` manager (apt, dnf,
    brew, winget) sharing the same runner and the manager's
    `dry_run` / `elevated` flags, and MUST stop at the first `FAILED`
@@ -202,6 +215,7 @@ once in the shared base.
 | `upgrade_pip` | `bool \| None` | `None` | Per-spec override of the config flag. |
 | `upgrade_packages` | `bool` | `False` | Pass `--upgrade` and bypass the probe. |
 | `recreate` | `bool` | `False` | Remove an existing environment first. |
+| `owner` | `str \| None` | `None` | Hand the finished tree to this owner as the last deploy step. |
 
 ### `PythonPackageInfo` (dataclass)
 
@@ -258,6 +272,16 @@ The abstract verbs never spell an OS path or shell tool. A
 | Directory-exists probe | `test -d <path>` | `powershell.exe -NoProfile -NonInteractive -Command "if (Test-Path -LiteralPath '<path>' -PathType Container) { exit 0 } else { exit 1 }"` |
 | Recursive removal | `rm -rf <path>` | `powershell.exe … -Command "Remove-Item -LiteralPath '<path>' -Recurse -Force"` |
 | Path joining | `posixpath` | `ntpath` |
+| Owner probe | `stat -c "%U:%G" <path>` (GNU, Linux) / `stat -f "%Su:%Sg" <path>` (BSD, macOS) | `powershell … "(Get-Acl -LiteralPath '<path>').Owner"` |
+| Owner assignment | `chown -R <owner> <path>` | `icacls <path> /setowner <owner> /T /C` |
+| Paired owner group | yes (`user:group`) | no — bare account name only |
+
+Ownership is the one concern where "POSIX" is not a single answer: `chown` is
+common to Linux and macOS, but reading an owner back takes GNU flags on Linux
+and BSD flags on macOS. `BsdPythonEnvironmentLayout` subclasses the POSIX
+layout and overrides only the probe; the macOS package uses it. A per-OS
+implementation MUST assert the concrete layout class in its tests, because a
+plain POSIX layout on macOS emits a `stat -c` that macOS rejects.
 
 Prerequisite packages per OS (defaults; all configurable):
 

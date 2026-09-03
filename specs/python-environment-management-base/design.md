@@ -17,6 +17,8 @@ three things differ, and they are all filesystem / shell concerns:
 | Interpreter inside the venv | `bin/python` | `Scripts\python.exe` |
 | Default launcher for the creating interpreter | `python3` | `py -3` |
 | Directory probe / removal | `test -d`, `rm -rf` | PowerShell `Test-Path`, `Remove-Item` |
+| Owner probe | `stat -c "%U:%G"` (GNU/Linux), `stat -f "%Su:%Sg"` (BSD/macOS) | `(Get-Acl -LiteralPath '<path>').Owner` |
+| Owner assignment | `chown -R <owner> <path>` | `icacls <path> /setowner <owner> /T /C` |
 
 Those are isolated in `ccai.sysman.common.pythonenvironmentlayout`.
 
@@ -73,6 +75,8 @@ Those are isolated in `ccai.sysman.common.pythonenvironmentlayout`.
 | `install_requirements(path, files, *, constraints_files, upgrade)` | Write | `… install [--upgrade] <index opts> <pip_options> -r f… -c c…` |
 | `uninstall_packages(path, names)` | Write | `… uninstall -y <names>` |
 | `upgrade_pip(path)` | Write | `… install --upgrade <index opts> pip` |
+| `set_owner(path, owner)` | Write | layout set-owner argv (`chown -R` / `icacls /setowner`) |
+| `get_owner(path)` | Read | layout owner-probe argv (`stat` / `Get-Acl`) |
 | `deploy(spec)` | Write | composite of the above |
 | `environment_exists(path)` | Read | layout exists argv |
 | `is_valid_environment(path)` | Read | exists + `get_python_version` |
@@ -158,6 +162,7 @@ class PythonEnvDeployResult:
 | `install_packages` (`upgrade=False`) | `pip list --format json` | every specifier satisfied per the probe table |
 | `uninstall_packages` | `pip list --format json` | no name present |
 | `install_requirements`, `upgrade_pip` | none | never skip |
+| `set_owner` | layout owner probe on the root | probe equals the requested owner |
 
 The requirement probe (`_parse_requirement`, `_clause_satisfied`, `_version_tuple`)
 is deliberately conservative.  It uses only the standard library, so it refuses to

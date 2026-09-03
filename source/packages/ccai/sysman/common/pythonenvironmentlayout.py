@@ -10,11 +10,18 @@
     those differences so :class:`PythonEnvironmentManagementBase` can
     stay OS-neutral.
 
-    Two concrete layouts ship with the package:
+    Ownership is the one concern where "POSIX" is not a single answer:
+    ``chown`` is common to Linux and macOS, but the ``stat`` used to read an
+    owner back takes GNU flags on Linux and BSD flags on macOS.  That is why
+    a BSD variant of the POSIX layout exists.
+
+    Three concrete layouts ship with the package:
 
         * :class:`PosixPythonEnvironmentLayout` — ``<venv>/bin/python``,
           ``python3`` launcher, ``test -d`` / ``rm -rf`` probes.  Used by
           the Ubuntu, RHEL, and macOS sysman packages.
+        * :class:`BsdPythonEnvironmentLayout` — the POSIX layout with the
+          BSD ``stat -f`` owner probe.  Used by the macOS sysman package.
         * :class:`WindowsPythonEnvironmentLayout` —
           ``<venv>\\Scripts\\python.exe``, ``py -3`` launcher, PowerShell
           ``Test-Path`` / ``Remove-Item`` probes.  Used by the Windows
@@ -109,6 +116,52 @@ class PythonEnvironmentLayout(ABC):
         """
         ...
 
+    @abstractmethod
+    def build_query_owner_argv(self, path: str) -> List[str]:
+        """
+            Build an argv that prints the current owner of ``path`` on
+            stdout, in the same form :meth:`normalise_owner` accepts.
+
+            :param path: The directory to probe.
+
+            :returns: The argv list.
+        """
+        ...
+
+    @abstractmethod
+    def build_set_owner_argv(self, path: str, owner: str) -> List[str]:
+        """
+            Build an argv that recursively assigns ``owner`` to ``path``.
+
+            :param path: The directory to re-own.
+            :param owner: The owner in this layout's notation.
+
+            :returns: The argv list.
+        """
+        ...
+
+    def normalise_owner(self, raw: str) -> str:
+        """
+            Normalise an owner string for comparison, so a probe result and
+            a caller-supplied value can be matched.
+
+            :param raw: A queried or caller-supplied owner.
+
+            :returns: The normalised form.
+        """
+        rtnval = raw.strip()
+        return rtnval
+
+    @property
+    def supports_owner_group(self) -> bool:
+        """
+            Whether this platform has a ``user:group`` ownership pair.
+
+            :returns: True on POSIX; False on Windows, whose ACL model has
+                      an owner but no paired group.
+        """
+        return True
+
 
 class PosixPythonEnvironmentLayout(PythonEnvironmentLayout):
     """
@@ -148,6 +201,57 @@ class PosixPythonEnvironmentLayout(PythonEnvironmentLayout):
             :returns: ``["rm", "-rf", <path>]``.
         """
         rtnval = ["rm", "-rf", path]
+        return rtnval
+
+    def build_query_owner_argv(self, path: str) -> List[str]:
+        """
+            :returns: ``["stat", "-c", "%U:%G", <path>]`` — the GNU
+                      coreutils form used on Linux.  macOS ships BSD
+                      ``stat``; see :class:`BsdPythonEnvironmentLayout`.
+        """
+        rtnval = ["stat", "-c", "%U:%G", path]
+        return rtnval
+
+    def build_set_owner_argv(self, path: str, owner: str) -> List[str]:
+        """
+            :returns: ``["chown", "-R", <owner>, <path>]``.
+        """
+        rtnval = ["chown", "-R", owner, path]
+        return rtnval
+
+    def normalise_owner(self, raw: str) -> str:
+        """
+            Normalise a POSIX owner.  A bare ``user`` and ``user:group`` are
+            both accepted; the group half is dropped so that ``chown -R
+            agent`` (which leaves the group alone) still compares equal to a
+            probe that reports ``agent:staff``.
+
+            :param raw: A queried or caller-supplied owner.
+
+            :returns: The user portion, stripped.
+        """
+        stripped = raw.strip()
+        user, _, _group = stripped.partition(":")
+        rtnval = user
+        return rtnval
+
+
+class BsdPythonEnvironmentLayout(PosixPythonEnvironmentLayout):
+    """
+        The POSIX layout with the BSD ``stat`` owner probe, for macOS.
+
+        Everything else — ``bin/python``, the ``python3`` launcher,
+        ``test -d`` and ``rm -rf`` — is identical to
+        :class:`PosixPythonEnvironmentLayout`.  Only the owner probe differs:
+        GNU ``stat -c`` is not available on macOS, whose ``stat`` spells the
+        same query ``-f "%Su:%Sg"``.
+    """
+
+    def build_query_owner_argv(self, path: str) -> List[str]:
+        """
+            :returns: ``["stat", "-f", "%Su:%Sg", <path>]``.
+        """
+        rtnval = ["stat", "-f", "%Su:%Sg", path]
         return rtnval
 
 
@@ -221,6 +325,54 @@ class WindowsPythonEnvironmentLayout(PythonEnvironmentLayout):
         rtnval = self.build_powershell_argv(script=script)
         return rtnval
 
+    @property
+    def supports_owner_group(self) -> bool:
+        """
+            :returns: False — the Windows ACL model has an owner but no
+                      paired group, so a ``user:group`` owner is rejected.
+        """
+        return False
+
+    def build_query_owner_argv(self, path: str) -> List[str]:
+        """
+            :returns: A PowerShell argv printing the ACL owner of ``path``
+                      (for example ``BUILTIN\\Administrators`` or
+                      ``CORP\\svc-agent``).
+        """
+        script = "(Get-Acl -LiteralPath '{}').Owner".format(
+            escape_powershell_single_quoted(value=path),
+        )
+        rtnval = self.build_powershell_argv(script=script)
+        return rtnval
+
+    def build_set_owner_argv(self, path: str, owner: str) -> List[str]:
+        """
+            :returns: An ``icacls`` argv assigning the ACL owner recursively.
+
+            Windows has no ``user:group`` ownership pair, so only the user
+            portion of an owner is meaningful here; a ``group`` half is
+            rejected by the manager before this is reached.  Setting an owner
+            requires the SeRestorePrivilege, i.e. an elevated token.
+        """
+        rtnval = ["icacls", path, "/setowner", owner, "/T", "/C"]
+        return rtnval
+
+    def normalise_owner(self, raw: str) -> str:
+        """
+            Normalise a Windows ACL owner for comparison.  ``Get-Acl``
+            reports a qualified ``DOMAIN\\user``; a caller may supply either
+            that or the bare user name, so the comparison uses the portion
+            after the last backslash, case-insensitively.
+
+            :param raw: A queried or caller-supplied owner.
+
+            :returns: The lower-cased account name.
+        """
+        stripped = raw.strip()
+        _prefix, _, account = stripped.rpartition("\\")
+        rtnval = account.lower()
+        return rtnval
+
     def build_powershell_argv(self, *, script: str) -> List[str]:
         """
             Build the canonical ``["powershell.exe", "-NoProfile",
@@ -253,6 +405,7 @@ def escape_powershell_single_quoted(*, value: str) -> str:
 
 
 __all__ = [
+    "BsdPythonEnvironmentLayout",
     "PosixPythonEnvironmentLayout",
     "PythonEnvironmentLayout",
     "WindowsPythonEnvironmentLayout",

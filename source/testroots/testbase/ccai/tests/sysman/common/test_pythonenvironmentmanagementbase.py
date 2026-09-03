@@ -19,6 +19,7 @@ from ccai import testbase
 from ccai.interfaces.icommandrunner import RunResult
 
 from ccai.sysman.common.pythonenvironmentlayout import (
+    BsdPythonEnvironmentLayout,
     PosixPythonEnvironmentLayout,
     PythonEnvironmentLayout,
     WindowsPythonEnvironmentLayout,
@@ -161,12 +162,14 @@ def _make_manager(
 def _write_calls(runner: _MockCommandRunner) -> list:
     """
         Every call that is not a read probe (``test -d``, ``python -c``,
-        ``pip list``, ``pip freeze``).
+        ``pip list``, ``pip freeze``, ``stat`` for the owner).
     """
     rtnval = []
     for call in runner.calls:
         args = call["args"]
         if args[:1] == ["test"]:
+            continue
+        if args[:1] == ["stat"]:
             continue
         if args[:2] == [_VENV_PYTHON, "-c"]:
             continue
@@ -1206,4 +1209,225 @@ def test_elevation_blocked_extension_surfaces_as_detail_token():
 
     testbase.assert_equal(result.status, PythonEnvActionStatus.FAILED)
     testbase.assert_equal(result.detail, DETAIL_ELEVATION_BLOCKED)
+    return
+
+
+# ----------------------------------------------------------------------
+# Ownership
+#
+# Creating an environment with elevated=True yields a root-owned tree the
+# service account cannot write to, so deploy hands it over as its last step.
+# ----------------------------------------------------------------------
+
+
+_STAT_ARGV = ("stat", "-c", "%U:%G", _VENV)
+_CHOWN_ARGV = ["chown", "-R", "agent", _VENV]
+
+
+def _seed_owner(runner: _MockCommandRunner, owner: str) -> None:
+    runner.results[_STAT_ARGV] = _ok(stdout=owner + "\n")
+    return
+
+
+def test_posix_layout_owner_argv():
+    layout = PosixPythonEnvironmentLayout()
+    testbase.assert_equal(layout.build_query_owner_argv(path=_VENV), list(_STAT_ARGV))
+    testbase.assert_equal(layout.build_set_owner_argv(path=_VENV, owner="agent"), _CHOWN_ARGV)
+    testbase.assert_equal(layout.supports_owner_group, True)
+    return
+
+
+def test_bsd_layout_only_differs_in_the_owner_probe():
+    # macOS ships BSD stat; everything else matches the POSIX layout.
+    posix = PosixPythonEnvironmentLayout()
+    bsd = BsdPythonEnvironmentLayout()
+    testbase.assert_equal(bsd.build_query_owner_argv(path=_VENV),
+                          ["stat", "-f", "%Su:%Sg", _VENV])
+    testbase.assert_equal(bsd.build_set_owner_argv(path=_VENV, owner="agent"),
+                          posix.build_set_owner_argv(path=_VENV, owner="agent"))
+    testbase.assert_equal(bsd.venv_python_path(path=_VENV), posix.venv_python_path(path=_VENV))
+    testbase.assert_equal(bsd.build_remove_tree_argv(path=_VENV),
+                          posix.build_remove_tree_argv(path=_VENV))
+    return
+
+
+def test_windows_layout_owner_argv_and_no_group():
+    layout = WindowsPythonEnvironmentLayout()
+    path = r"C:\venvs\app"
+    testbase.assert_equal(layout.supports_owner_group, False)
+    testbase.assert_equal(
+        layout.build_set_owner_argv(path=path, owner="svc"),
+        ["icacls", path, "/setowner", "svc", "/T", "/C"],
+    )
+    query = layout.build_query_owner_argv(path=path)
+    testbase.assert_equal(query[4], "(Get-Acl -LiteralPath 'C:\\venvs\\app').Owner")
+    # Get-Acl reports DOMAIN\user; a caller may supply either form.
+    testbase.assert_equal(layout.normalise_owner("CORP\\Svc-Agent"), "svc-agent")
+    testbase.assert_equal(layout.normalise_owner("svc-agent"), "svc-agent")
+    return
+
+
+def test_posix_normalise_owner_drops_the_group_half():
+    # `chown -R agent` leaves the group alone, so a probe reporting
+    # agent:staff must still compare equal to the requested "agent".
+    layout = PosixPythonEnvironmentLayout()
+    testbase.assert_equal(layout.normalise_owner("agent:staff"), "agent")
+    testbase.assert_equal(layout.normalise_owner(" agent \n"), "agent")
+    return
+
+
+def test_get_owner_reads_and_normalises():
+    runner = _MockCommandRunner()
+    _seed_owner(runner, "agent:staff")
+    manager = _make_manager(runner, PythonEnvManagerConfig(elevated=True))
+    testbase.assert_equal(manager.get_owner(path=_VENV), "agent")
+    testbase.assert_equal(runner.calls[0]["elevated"], False)
+    return
+
+
+def test_get_owner_returns_none_when_the_probe_fails():
+    runner = _MockCommandRunner()
+    runner.results[_STAT_ARGV] = _fail(exit_code=1)
+    manager = _make_manager(runner)
+    testbase.assert_equal(manager.get_owner(path=_VENV), None)
+
+    runner.results[_STAT_ARGV] = _ok(stdout="   \n")
+    testbase.assert_equal(manager.get_owner(path=_VENV), None)
+    return
+
+
+def test_set_owner_dispatches_chown_when_owner_differs():
+    runner = _MockCommandRunner()
+    _seed_owner(runner, "root:root")
+    manager = _make_manager(runner, PythonEnvManagerConfig(elevated=True))
+
+    result = manager.set_owner(path=_VENV, owner="agent")
+
+    testbase.assert_equal(result.status, PythonEnvActionStatus.SUCCESS)
+    writes = _write_calls(runner)
+    testbase.assert_equal([c["args"] for c in writes], [_CHOWN_ARGV])
+    testbase.assert_equal(writes[0]["elevated"], True)
+    return
+
+
+def test_set_owner_skipped_when_already_owned():
+    runner = _MockCommandRunner()
+    _seed_owner(runner, "agent:staff")
+    manager = _make_manager(runner)
+
+    result = manager.set_owner(path=_VENV, owner="agent")
+
+    testbase.assert_equal(result.status, PythonEnvActionStatus.SKIPPED)
+    testbase.assert_equal(result.message, "environment is already owned by the requested owner")
+    testbase.assert_equal(_write_calls(runner), [])
+    return
+
+
+def test_set_owner_dispatches_when_the_probe_cannot_answer():
+    # An unreadable owner must not be treated as "already correct".
+    runner = _MockCommandRunner()
+    runner.results[_STAT_ARGV] = _fail(exit_code=1)
+    manager = _make_manager(runner)
+
+    result = manager.set_owner(path=_VENV, owner="agent")
+
+    testbase.assert_equal(result.status, PythonEnvActionStatus.SUCCESS)
+    testbase.assert_equal(len(_write_calls(runner)), 1)
+    return
+
+
+def test_set_owner_dry_run_records_the_command():
+    runner = _MockCommandRunner()
+    manager = _make_manager(runner, PythonEnvManagerConfig(dry_run=True))
+
+    result = manager.set_owner(path=_VENV, owner="agent")
+
+    testbase.assert_equal(result.status, PythonEnvActionStatus.DRY_RUN)
+    testbase.assert_equal(result.command, _CHOWN_ARGV)
+    testbase.assert_equal(runner.calls, [])
+    return
+
+
+def test_set_owner_rejects_a_malformed_owner():
+    runner = _MockCommandRunner()
+    manager = _make_manager(runner)
+    for bad in ("", "agent; rm -rf /", "-agent", "agent:staff:extra"):
+        raised = False
+        try:
+            manager.set_owner(path=_VENV, owner=bad)
+        except ValueError:
+            raised = True
+        testbase.assert_true(raised, bad)
+    testbase.assert_equal(runner.calls, [])
+    return
+
+
+def test_set_owner_rejects_a_group_half_on_windows():
+    class _WindowsManager(PythonEnvironmentManagementBase):
+        def _build_layout(self) -> PythonEnvironmentLayout:
+            return WindowsPythonEnvironmentLayout()
+
+    manager = _WindowsManager(runner=_MockCommandRunner())
+    raised = False
+    try:
+        manager.set_owner(path=r"C:\venvs\app", owner="svc:admins")
+    except ValueError:
+        raised = True
+    testbase.assert_true(raised)
+    # The bare account name is accepted.
+    manager._require_owner(owner="svc")
+    return
+
+
+def test_deploy_hands_ownership_over_last():
+    runner = _MockCommandRunner()
+    _seed_env_missing(runner)
+    _seed_installed(runner, [])
+    _seed_owner(runner, "root:root")
+    manager = _make_manager(runner, PythonEnvManagerConfig(elevated=True))
+
+    spec = PythonEnvSpec(path=_VENV, packages=["rich"], owner="agent")
+    result = manager.deploy(spec=spec)
+
+    testbase.assert_equal(result.status, PythonEnvActionStatus.SUCCESS)
+    writes = [c["args"] for c in _write_calls(runner)]
+    testbase.assert_equal(writes[-1], _CHOWN_ARGV)
+    testbase.assert_equal(
+        writes,
+        [
+            ["python3", "-m", "venv", _VENV],
+            _pip_argv("install", "--upgrade", "pip"),
+            _pip_argv("install", "rich"),
+            _CHOWN_ARGV,
+        ],
+    )
+    return
+
+
+def test_deploy_without_an_owner_never_chowns():
+    runner = _MockCommandRunner()
+    _seed_env_missing(runner)
+    _seed_installed(runner, [])
+    manager = _make_manager(runner)
+
+    manager.deploy(spec=PythonEnvSpec(path=_VENV, packages=["rich"]))
+
+    for call in runner.calls:
+        testbase.assert_true(call["args"][:1] != ["chown"])
+    return
+
+
+def test_deploy_stops_before_chown_when_an_install_fails():
+    runner = _MockCommandRunner()
+    _seed_env_missing(runner)
+    _seed_installed(runner, [])
+    _seed_owner(runner, "root:root")
+    runner.results[tuple(_pip_argv("install", "rich"))] = _fail(stderr="no network")
+    manager = _make_manager(runner)
+
+    result = manager.deploy(spec=PythonEnvSpec(path=_VENV, packages=["rich"], owner="agent"))
+
+    testbase.assert_equal(result.status, PythonEnvActionStatus.FAILED)
+    for call in runner.calls:
+        testbase.assert_true(call["args"][:1] != ["chown"])
     return

@@ -65,8 +65,14 @@ items (`[ ]`) identify remaining work.
   green-verified in a rehomed environment
 - [x] 31. Route `_dispatch_write` through `BaseFeatureManager._dispatch`; the
   shared helper now surfaces `elevation_blocked` (2026-09-02)
-- [ ] 32. Optional `chown` / ownership step after an elevated create (delegate to
-  `acl-management` / `user-group-management`), tracked as a contract extension
+- [x] 32. Ownership hand-over after an elevated create (2026-09-02): `set_owner` /
+  `get_owner` verbs, `PythonEnvSpec.owner`, applied as the final `deploy` step;
+  layout gains `build_query_owner_argv` / `build_set_owner_argv` /
+  `normalise_owner` / `supports_owner_group`, with `BsdPythonEnvironmentLayout`
+  for macOS because BSD `stat` differs from GNU.  Kept in this feature rather
+  than delegated to `acl-management`: it is one recursive chown on a path this
+  feature already owns, and delegating would thread a second manager and its
+  config through every per-OS subclass for a single argv.
 - [ ] 33. Hash-checking mode (`--require-hashes`) and lock-file support as an
   extension
 - [x] 34. Update `codecraftai-books` volume 04 for the new contract and the

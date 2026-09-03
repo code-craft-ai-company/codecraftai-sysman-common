@@ -168,7 +168,37 @@ from a chosen interpreter, idempotently and with dry-run support.
 
 ---
 
-### Requirement 9: Deploy From a Spec
+### Requirement 9: Hand Ownership Over
+
+**User Story:** As a maintenance coordinator, I want an environment created
+with elevation handed to the service account that will run it, so the
+application can write to its own virtualenv.
+
+#### Acceptance Criteria
+
+1. `set_owner(path, owner)` SHALL dispatch the layout's set-owner argv with
+   `elevated=config.elevated`.
+2. WHEN the environment root already reports the requested owner THE SYSTEM
+   SHALL return `SKIPPED` with
+   `message="environment is already owned by the requested owner"`.
+3. WHEN the owner probe fails or returns nothing THE SYSTEM SHALL dispatch
+   rather than skip -- an unreadable owner is never treated as "already
+   correct".
+4. WHEN dry-run is active THE SYSTEM SHALL return `DRY_RUN` with `command`
+   populated and SHALL NOT invoke the runner.
+5. THE SYSTEM SHALL raise `ValueError` for an owner that is empty or not of
+   the form `user[:group]`, and for a `user:group` value when the layout
+   reports `supports_owner_group == False`.
+6. `get_owner(path)` SHALL return the layout-normalised owner, or `None` when
+   the probe fails; it SHALL NOT elevate.
+7. Owner comparison SHALL be layout-normalised: POSIX drops the group half
+   (so `chown -R agent`, which leaves the group alone, still matches a probe
+   reporting `agent:staff`); Windows compares the account name after the last
+   backslash, case-insensitively.
+
+---
+
+### Requirement 10: Deploy From a Spec
 
 #### Acceptance Criteria
 
@@ -176,7 +206,8 @@ from a chosen interpreter, idempotently and with dry-run support.
    `remove_environment` (only when `spec.recreate`), `create_environment` with
    `upgrade_pip=False`, `upgrade_pip` (when the effective flag is True),
    `install_requirements` (when files are listed), `install_packages` (when packages
-   are listed).
+   are listed), `set_owner` (when `spec.owner` is set -- last, so that everything
+   pip wrote is re-owned as well).
 2. THE SYSTEM SHALL stop at the first `FAILED` step and SHALL populate `message`
    with a one-line description of that step.
 3. THE SYSTEM SHALL aggregate `status` as `FAILED` > `DRY_RUN` > `SUCCESS` >
