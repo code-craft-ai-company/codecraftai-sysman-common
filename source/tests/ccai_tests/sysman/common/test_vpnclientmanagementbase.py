@@ -4,11 +4,11 @@
 """
 
 import dataclasses
+import random
 import unittest
 
 from typing import Callable, Dict, List, Optional
 
-from ccai.testbase.properties import given
 from ccai.testbase.properties import strategies as st
 
 from ccai.aspects.aspects import Aspects
@@ -26,6 +26,20 @@ from ccai.sysman.common.vpnclientmanagementbase import (
     VPNProvider,
 )
 
+
+
+def _run_property(test: unittest.TestCase, check, max_examples: int, **strategies) -> None:
+    """
+        Runs ``check`` against ``max_examples`` generated inputs. ``@given`` from ccai.testbase only marks a
+        test for the testbase sequencer's property runner; under plain unittest the examples have to be drawn
+        here, from a fixed seed so a failure reproduces.
+    """
+    rng = random.Random(0x5EED)
+    for index in range(max_examples):
+        kwargs = {name: strategy.generate(rng) for name, strategy in strategies.items()}
+        with test.subTest(example=index, **{name: repr(value)[:48] for name, value in kwargs.items()}):
+            check(**kwargs)
+    return
 
 class _MockRunner:
     """
@@ -586,13 +600,11 @@ class IdempotencyPropertyTests(unittest.TestCase):
         Property-based tests covering the contract idempotency rules.
     """
 
-    @given(
-        version=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
-        channel=st.sampled_from(["stable", "unstable", "beta"]),
-    )
-    def test_property_install_is_idempotent(
-        self, version: Optional[str], channel: str
-    ) -> None:
+    def test_property_install_is_idempotent(self) -> None:
+        _run_property(self, self._test_property_install_is_idempotent, 100, version=st.one_of(st.none(), st.text(min_size=1, max_size=8)), channel=st.sampled_from(["stable", "unstable", "beta"]))
+        return
+
+    def _test_property_install_is_idempotent(self, version: Optional[str], channel: str) -> None:
         runner = _MockRunner()
         manager = _FakeVPNClientManager(runner=runner)
         first = manager.install_tailscale(
@@ -605,8 +617,11 @@ class IdempotencyPropertyTests(unittest.TestCase):
         self.assertEqual(second.status, VPNActionStatus.SKIPPED)
         return
 
-    @given(purge=st.booleans(), constraints={"max_examples": 25})
-    def test_property_uninstall_is_idempotent(self, purge: bool) -> None:
+    def test_property_uninstall_is_idempotent(self) -> None:
+        _run_property(self, self._test_property_uninstall_is_idempotent, 25, purge=st.booleans())
+        return
+
+    def _test_property_uninstall_is_idempotent(self, purge: bool) -> None:
         runner = _MockRunner()
         manager = _FakeVPNClientManager(runner=runner)
         manager.install_tailscale(
@@ -622,14 +637,11 @@ class IdempotencyPropertyTests(unittest.TestCase):
         self.assertEqual(second.status, VPNActionStatus.SKIPPED)
         return
 
-    @given(
-    constraints={"max_examples": 10},
-        authkey=st.text(min_size=1, max_size=16),
-        hostname=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
-    )
-    def test_property_bring_up_idempotent_on_matching_state(
-        self, authkey: str, hostname: Optional[str]
-    ) -> None:
+    def test_property_bring_up_idempotent_on_matching_state(self) -> None:
+        _run_property(self, self._test_property_bring_up_idempotent_on_matching_state, 10, authkey=st.text(min_size=1, max_size=16), hostname=st.one_of(st.none(), st.text(min_size=1, max_size=8)))
+        return
+
+    def _test_property_bring_up_idempotent_on_matching_state(self, authkey: str, hostname: Optional[str]) -> None:
         runner = _MockRunner()
         manager = _FakeVPNClientManager(runner=runner)
         manager.install_tailscale(
@@ -673,14 +685,11 @@ class DryRunPropertyTests(unittest.TestCase):
         Property tests covering the dry-run safety invariant.
     """
 
-    @given(
-    constraints={"max_examples": 20},
-        version=st.one_of(st.none(), st.text(min_size=1, max_size=8)),
-        channel=st.sampled_from(["stable", "unstable"]),
-    )
-    def test_property_dry_run_never_invokes_runner(
-        self, version: Optional[str], channel: str
-    ) -> None:
+    def test_property_dry_run_never_invokes_runner(self) -> None:
+        _run_property(self, self._test_property_dry_run_never_invokes_runner, 20, version=st.one_of(st.none(), st.text(min_size=1, max_size=8)), channel=st.sampled_from(["stable", "unstable"]))
+        return
+
+    def _test_property_dry_run_never_invokes_runner(self, version: Optional[str], channel: str) -> None:
         runner = _MockRunner()
         manager = _FakeVPNClientManager(
             runner=runner, config=VPNClientManagerConfig(dry_run=True)
@@ -698,12 +707,11 @@ class ElevationPropertyTests(unittest.TestCase):
         Property tests covering the elevation truth table.
     """
 
-    @given(
-    constraints={"max_examples": 25},
-        elevated=st.booleans(),
-        kind=st.sampled_from([VERB_KIND_READ, VERB_KIND_WRITE]),
-    )
-    def test_property_elevation_truth_table(self, elevated: bool, kind: str) -> None:
+    def test_property_elevation_truth_table(self) -> None:
+        _run_property(self, self._test_property_elevation_truth_table, 25, elevated=st.booleans(), kind=st.sampled_from([VERB_KIND_READ, VERB_KIND_WRITE]))
+        return
+
+    def _test_property_elevation_truth_table(self, elevated: bool, kind: str) -> None:
         runner = _MockRunner()
         manager = _FakeVPNClientManager(
             runner=runner, config=VPNClientManagerConfig(elevated=elevated)
