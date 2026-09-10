@@ -1,32 +1,48 @@
-[tool.poetry]
+[project]
 name = "codecraftai-sysman-common"
+version = "1.1.0"
 description = "Code Craft AI - System Management Common Foundation"
-version = "1.0.2"
-authors = ["Myron Walker <myron.walker@gmail.com>"]
 readme = "README.rst"
 license = "LicenseRef-CodeCraftAI-Dual-License"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: Other/Proprietary License",
-    "Operating System :: OS Independent"
-]
+authors = [{name = "Myron Walker", email = "myron.walker@gmail.com"}]
 keywords = [
     "python"
 ]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.10,<4.0"
+dependencies = [
+    "codecraftai-foundations<2.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "codecraftai-testbase<2.0.0",
+]
+
+[tool.poetry]
 packages = [{include="ccai", from="source/packages"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4.0"
-codecraftai-foundations = { version = "<2.0.0", source = "codecraftai" }
+codecraftai-foundations = {source = "codecraftai"}
 
 [tool.poetry.group.dev.dependencies]
-codecraftai-testbase = { version = "<2.0.0", source = "codecraftai" }
-
+codecraftai-testbase = {source = "codecraftai"}
 
 [[tool.poetry.source]]
 name = "codecraftai"
 url = "https://code-craft.ai/licensed-repository/simple/"
 priority = "supplemental"
+
+[[tool.uv.index]]
+# Same licensed index as [[tool.poetry.source]]. Listed before PyPI so that
+# codecraftai-* packages (direct and transitive) resolve from it; everything
+# else falls through to PyPI. Credentials: UV_INDEX_CODECRAFTAI_USERNAME /
+# UV_INDEX_CODECRAFTAI_PASSWORD, or `uv auth login`.
+name = "codecraftai"
+url = "https://code-craft.ai/licensed-repository/simple/"
 
 [tool.ruff.lint]
 # Deliberately narrow.  This gate exists for one reason: a bare `except:`
