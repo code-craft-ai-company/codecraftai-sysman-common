@@ -12,7 +12,7 @@
 import json
 
 from dataclasses import dataclass, field
-from typing import Callable, List, Optional
+from typing import Callable, Optional
 
 from ccai import testbase
 from ccai.testbase.properties import given
@@ -30,7 +30,6 @@ from ccai.sysman.common.pythonenvironmentmanagementbase import (
     DETAIL_ELEVATION_BLOCKED,
     PythonEnvActionResult,
     PythonEnvActionStatus,
-    PythonEnvDeployResult,
     PythonEnvInfo,
     PythonEnvManagerConfig,
     PythonEnvQueryError,

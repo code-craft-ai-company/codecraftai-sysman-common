@@ -354,7 +354,6 @@ class PythonEnvironmentManagementBase(BaseFeatureManager, ABC):
 
             :returns: The layout strategy.
         """
-        ...
 
     @property
     def layout(self) -> PythonEnvironmentLayout:

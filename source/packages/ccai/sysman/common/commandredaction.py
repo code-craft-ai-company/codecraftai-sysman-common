@@ -14,7 +14,6 @@
     portion of any URL-shaped token is replaced with the placeholder.
 """
 
-import os
 import re
 
 from typing import List, Optional

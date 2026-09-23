@@ -67,7 +67,6 @@ class PythonEnvironmentLayout(ABC):
             :returns: An argv prefix such as ``["python3"]`` or
                       ``["py", "-3"]``.
         """
-        ...
 
     @abstractmethod
     def join_path(self, base: str, *parts: str) -> str:
@@ -79,7 +78,6 @@ class PythonEnvironmentLayout(ABC):
 
             :returns: The joined path.
         """
-        ...
 
     @abstractmethod
     def venv_python_path(self, path: str) -> str:
@@ -91,7 +89,6 @@ class PythonEnvironmentLayout(ABC):
 
             :returns: The interpreter path.
         """
-        ...
 
     @abstractmethod
     def build_directory_exists_argv(self, path: str) -> List[str]:
@@ -103,7 +100,6 @@ class PythonEnvironmentLayout(ABC):
 
             :returns: The argv list.
         """
-        ...
 
     @abstractmethod
     def build_remove_tree_argv(self, path: str) -> List[str]:
@@ -114,7 +110,6 @@ class PythonEnvironmentLayout(ABC):
 
             :returns: The argv list.
         """
-        ...
 
     @abstractmethod
     def build_query_owner_argv(self, path: str) -> List[str]:
@@ -126,7 +121,6 @@ class PythonEnvironmentLayout(ABC):
 
             :returns: The argv list.
         """
-        ...
 
     @abstractmethod
     def build_set_owner_argv(self, path: str, owner: str) -> List[str]:
@@ -138,7 +132,6 @@ class PythonEnvironmentLayout(ABC):
 
             :returns: The argv list.
         """
-        ...
 
     def normalise_owner(self, raw: str) -> str:
         """

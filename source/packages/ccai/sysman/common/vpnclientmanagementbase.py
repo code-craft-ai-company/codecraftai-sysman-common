@@ -93,7 +93,6 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
 
             :returns: A :class:`VPNActionResult` describing the outcome.
         """
-        ...
 
     @abstractmethod
     def install_twingate_connector(
@@ -111,7 +110,6 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
 
             :returns: A :class:`VPNActionResult` describing the outcome.
         """
-        ...
 
     @abstractmethod
     def configure(
@@ -130,7 +128,6 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
 
             :returns: A :class:`VPNActionResult` describing the outcome.
         """
-        ...
 
     @abstractmethod
     def bring_up(
@@ -160,7 +157,6 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
 
             :returns: A :class:`VPNActionResult` describing the outcome.
         """
-        ...
 
     @abstractmethod
     def bring_down(
@@ -177,7 +173,6 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
 
             :returns: A :class:`VPNActionResult` describing the outcome.
         """
-        ...
 
     @abstractmethod
     def status(
@@ -197,7 +192,6 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
                 command fails for reasons other than "daemon not
                 installed" or "daemon not running".
         """
-        ...
 
     @abstractmethod
     def uninstall(
@@ -217,7 +211,6 @@ class VPNClientManagementBase(BaseFeatureManager, ABC):
 
             :returns: A :class:`VPNActionResult` describing the outcome.
         """
-        ...
 
     # --------------------------------------------------------------
     # Shared helpers
